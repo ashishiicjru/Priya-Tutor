@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Last Mile Tutor · Team Reborn Innovators</title>
+<meta name="theme-color" content="#0f2142">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fbf8f1;--card:#fff;--ink:#1b1a17;--mut:#6a665b;--line:#e8e2d3;--acc:#e8920c;--acc2:#8a5300;--navy:#0f2142;--ok:#23804e;--bad:#c0392b}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1118;--card:#171b25;--ink:#f1eee6;--mut:#9fa3ad;--line:#272d3a;--acc:#f5a623;--acc2:#ffcf7a;--navy:#0a1630;--ok:#4cc38a;--bad:#ff7b6e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1118;--card:#171b25;--ink:#f1eee6;--mut:#9fa3ad;--line:#272d3a;--acc:#f5a623;--acc2:#ffcf7a;--navy:#0a1630;--ok:#4cc38a;--bad:#ff7b6e;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 60px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--navy);color:#fff;display:flex;gap:6px;align-items:center;padding:8px 12px;flex-wrap:wrap}
+nav b{margin-right:auto;font-size:16px}nav button{background:none;border:0;color:#cfd6e6;padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+nav a{color:#cfd6e6;padding:7px 12px;border-radius:8px;font-weight:600;text-decoration:none}nav a:hover{background:#ffffff22}
+nav button.on{background:var(--acc);color:#1a1200}
+.pill{font-size:12px;border-radius:20px;padding:2px 10px;border:1px solid currentColor}
+.hero{background:linear-gradient(135deg,var(--navy),#1d3b73);color:#fff;border-radius:0 0 22px 22px;padding:34px 20px 30px;margin:0 -16px}
+.hero h1{font-size:clamp(28px,6vw,46px);margin:8px 0;line-height:1.1}.hero p{max-width:680px;color:#d6def0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}
+h2{font-size:21px;margin:22px 0 6px}h3{font-size:17px;margin:0 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.grid .card{margin:0}.ico{font-size:26px}
+.sub{color:var(--mut);font-size:14px}
+label{display:block;font-size:13px;font-weight:600;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.btn{background:var(--acc);color:#1a1200;border:0;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
+.btn.g{background:transparent;border:1px solid var(--line);color:var(--ink)}.btn:disabled{opacity:.5;cursor:wait}
+.bar{height:9px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--ok));transition:width .3s}
+.stage{border-left:4px solid var(--acc);padding-left:12px;margin:22px 0 8px}
+.tp{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}.tp input{width:auto}
+.tp a{flex:1;cursor:pointer;text-decoration:underline dotted}.tp.d a{color:var(--mut);text-decoration:line-through}
+.md{overflow-wrap:anywhere}.md pre{background:var(--bg);border:1px solid var(--line);padding:10px;border-radius:8px;overflow-x:auto}
+.md code{background:var(--bg);padding:1px 5px;border-radius:4px}.md h3{margin:14px 0 4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chat{max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.m{padding:8px 12px;border-radius:12px;max-width:90%}.m.u{background:var(--acc);color:#1a1200;align-self:flex-end}.m.a{background:var(--bg);border:1px solid var(--line)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer}
+.opt.r{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}.opt.w{border-color:var(--bad)}
+.stat{font-size:28px;font-weight:800;color:var(--acc2)}
+.hide{display:none!important}.err{color:var(--bad);font-size:14px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}.flow span{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px}
+.chip{font-size:13px;padding:5px 10px;border:1px solid var(--line);border-radius:20px;background:var(--bg);cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:7px;border-bottom:1px solid var(--line);text-align:left}
+@media print{nav,.hero,.noprint,#tutor{display:none!important}body{background:#fff;color:#000}.card{border-color:#999;break-inside:avoid}}
+</style></head><body>
+<nav><b>🎓 Last Mile Tutor</b><span id="net" class="pill"></span>
+<button data-v="home" class="on">Home</button><button data-v="learn">Learn</button><button data-v="prog">Progress</button><button data-v="pitch">Pitch</button><a href="priya.html">⚡ Priya</a><button data-v="teach">Teacher</button><button id="th">◐</button></nav>
+<div class="wrap">
+
+<section id="v-home">
+<div class="hero"><span class="pill">Hackathon Project · Problem Statement: Last Mile Tutor</span>
+<h1>Great teaching, delivered to the very last learner.</h1>
+<p>A village student with no nearby coaching, patchy internet and a language barrier still deserves a patient tutor. Last Mile Tutor finds exactly what each learner is missing, builds a path from basics to pro, and teaches in their own language, even when the network drops.</p>
+<p><button class="btn" data-go="learn">Start learning →</button> <button class="btn g" style="color:#fff;border-color:#8ea0c4" data-go="pitch">See the pitch</button></p></div>
+<h2>The problem</h2>
+<div class="card"><p>Content and apps exist, but the <b>last mile</b> is broken: too few teachers, unreliable data, lessons in a language the learner does not think in, and nobody to notice which exact concept a student missed three classes ago. Learners fall behind silently, and gaps compound.</p></div>
+<h2>Our solution</h2>
+<div class="grid">
+<div class="card"><div class="ico">🧭</div><h3>Gap-finder diagnostic</h3><div class="sub">A 5-question check pinpoints missing prerequisites before any plan is made.</div></div>
+<div class="card"><div class="ico">🗺️</div><h3>Basics-to-pro roadmap</h3><div class="sub">Four stages: Bridge the Gaps, Core, Advanced, Pro. Weekly topics and practice tasks.</div></div>
+<div class="card"><div class="ico">🌐</div><h3>Learn in your language</h3><div class="sub">Lessons, quizzes and doubts in Hindi, Bengali, Tamil, Telugu, Marathi and more.</div></div>
+<div class="card"><div class="ico">📶</div><h3>Low-data and offline packs</h3><div class="sub">Short text-only mode. Download a week of lessons once, study with no signal.</div></div>
+<div class="card"><div class="ico">🔊</div><h3>Read-aloud</h3><div class="sub">Voice playback for learners who read slowly or learn by listening.</div></div>
+<div class="card"><div class="ico">🖨️</div><h3>Paper mode</h3><div class="sub">Print the roadmap as a one-page sheet for classrooms with zero connectivity.</div></div>
+<div class="card"><div class="ico">🔁</div><h3>Spaced revision</h3><div class="sub">Topics return for quick quizzes at the right time so learning sticks.</div></div>
+<div class="card"><div class="ico">📲</div><h3>Teacher and parent share</h3><div class="sub">One tap shares a progress summary over WhatsApp or SMS.</div></div>
+</div>
+<div class="card"><b>Built by Team Reborn Innovators</b><div class="sub">Ashish Kumar · Hepzibah Toppo (Team Member)</div></div>
+</section>
+
+<section id="v-learn" class="hide">
+<div id="setup" class="card"><h2 style="margin-top:0">1 · About the learner</h2>
+<div class="row">
+<div><label>Name</label><input id="nm" placeholder="Learner’s name"></div>
+<div><label>What to master</label><input id="subj" placeholder="e.g. Class 10 Maths, Python, English"></div>
+<div><label>Starting level</label><select id="lvl"><option>Absolute beginner</option><option>Some basics</option><option>Intermediate</option></select></div>
+<div><label>Language</label><select id="lang"><option>English</option><option>Hindi</option><option>Bengali</option><option>Tamil</option><option>Telugu</option><option>Marathi</option><option>Gujarati</option><option>Kannada</option></select></div>
+<div><label>Internet</label><select id="net2"><option value="good">Good</option><option value="slow">Slow / limited data</option></select></div>
+<div><label>Duration</label><select id="wks"><option value="8">8 weeks</option><option value="12" selected>12 weeks</option><option value="16">16 weeks</option></select></div>
+</div>
+<label>Goal (optional)</label><input id="goal" placeholder="Pass board exam, get a job, build projects…">
+<p><button class="btn" id="diag">Find my gaps →</button> <span id="gerr" class="err"></span></p></div>
+
+<div id="dg" class="card hide"></div>
+
+<div id="plan" class="hide">
+<div class="card"><h2 style="margin-top:0" id="pt"></h2><div class="sub" id="pm"></div><p class="bar"><i id="pb" style="width:0"></i></p><div class="sub" id="px"></div>
+<p class="noprint"><button class="btn g" id="rs">New plan</button></p></div>
+<div id="stages"></div></div>
+
+<div id="tutor" class="card hide"><h2 style="margin-top:0" id="tt"></h2>
+<div class="tabs"><button class="btn" data-t="l">Lesson</button><button class="btn g" data-t="q">Quiz</button><button class="btn g" data-t="a">Ask tutor</button><button class="btn g" id="spk">🔊 Read aloud</button><button class="btn g" id="dn">Mark done ✓</button><a class="btn g" id="pp" href="priya.html" style="text-decoration:none">⚡ Practice in Priya</a></div>
+<div id="pl" class="md"></div><div id="pq" class="hide"></div>
+<div id="pa" class="hide"><div class="tabs"><span class="chip" data-c="Explain this in simpler words, like I am 10 years old.">Simpler</span><span class="chip" data-c="Give me a real-life example from village or daily life.">Real-life example</span><span class="chip" data-c="Give only a hint, not the full answer.">Hint only</span></div>
+<div class="chat" id="chat"></div><textarea id="q" rows="2" placeholder="Ask any doubt…"></textarea><p><button class="btn" id="sd">Send</button> <button class="btn g" id="mic" title="Speak your doubt">🎤</button></p></div></div>
+</section>
+
+<section id="v-prog" class="hide">
+<h2>Progress</h2>
+<div class="grid"><div class="card"><div class="stat" id="s1">0</div><div class="sub">XP earned</div></div><div class="card"><div class="stat" id="s2">0</div><div class="sub">Day streak</div></div><div class="card"><div class="stat" id="s3">0%</div><div class="sub">Plan complete</div></div><div class="card"><div class="stat" id="s4">0</div><div class="sub">Lessons saved offline</div></div></div>
+<div class="card"><h3>Knowledge gaps found</h3><div id="gp" class="sub">Take the diagnostic in Learn.</div></div>
+<div class="card"><h3>Due for revision</h3><div id="rv" class="sub">Nothing due yet.</div></div>
+<div class="card"><h3>Practice results from Priya</h3><div id="ps" class="sub"></div></div>
+<div class="card"><h3>Share and print</h3><p><a class="btn" id="wa" target="_blank" rel="noopener">Share on WhatsApp</a> <button class="btn g" onclick="window.print()">Print roadmap</button></p><div class="sub">Print uses the Learn page roadmap. Open Learn first.</div></div>
+</section>
+
+<section id="v-teach" class="hide">
+<h2>Teacher dashboard</h2>
+<div class="sub">Learners share a progress link from Priya. Paste it here and the class view builds itself. Data stays in this browser; no learner data is uploaded.</div>
+<div class="card"><label>Paste report links or codes (one per line)</label><textarea id="tin" rows="3" placeholder="https://…/index.html#r=…"></textarea><p><button class="btn" id="timp">Add to class</button> <button class="btn g" id="tclr">Clear class</button> <span id="tmsg" class="sub"></span></p></div>
+<div class="grid"><div class="card"><div class="stat" id="t1">0</div><div class="sub">Learners</div></div><div class="card"><div class="stat" id="t2">0%</div><div class="sub">Class accuracy</div></div><div class="card"><div class="stat" id="t3" style="font-size:20px">-</div><div class="sub">Weakest class topic</div></div><div class="card"><div class="stat" id="t4">0</div><div class="sub">Need attention (under 50%)</div></div></div>
+<div class="card" style="overflow-x:auto"><table id="ttab"></table></div><div id="tdet" class="card hide"></div>
+<div class="card"><h3>Assign a test</h3><div class="row"><div><label>Topic</label><input id="ttp" placeholder="e.g. Fractions, Photosynthesis"></div><div><label>Questions</label><select id="tn"><option>5</option><option selected>8</option><option>10</option></select></div><div><label>Language</label><select id="tl"></select></div></div>
+<p><button class="btn" id="tgen">Generate test link</button> <span id="tmsg2" class="sub"></span></p><div id="tlink" class="hide"></div></div>
+<div class="card"><h3>Assignment results</h3><div id="tas" class="sub"></div></div>
+</section>
+
+<section id="v-pitch" class="hide">
+<h2>Pitch</h2>
+<div class="card"><h3>Problem statement</h3><p>Design a tutor that reaches the “last mile” learner: low connectivity, few teachers, language barriers and unnoticed learning gaps.</p></div>
+<div class="card"><h3>How it works</h3><div class="flow"><span>Learner profile</span>→<span>Gap diagnostic</span>→<span>Personal roadmap</span>→<span>Lesson in own language</span>→<span>Quiz + revision</span>→<span>Teacher share</span></div>
+<div class="sub">An LLM tutor generates the diagnostic, plan, lessons and quizzes. Offline packs and low-data mode shrink what must travel over the network.</div></div>
+<div class="card"><h3>Why it can win</h3><table>
+<tr><th>Criteria</th><th>Our answer</th></tr>
+<tr><td>Innovation</td><td>Gap-first planning plus offline packs and paper mode for true last-mile reach</td></tr>
+<tr><td>Impact</td><td>Any subject, 8 languages, works for learners with no tutor and little data</td></tr>
+<tr><td>Feasibility</td><td>Single deployable web app, no install, runs on a basic phone browser</td></tr>
+<tr><td>Scalability</td><td>Subject-agnostic generation, so one build serves every class and skill</td></tr>
+<tr><td>Inclusion</td><td>Vernacular, voice, low-data and printable by design</td></tr></table></div>
+<div class="card"><h3>Roadmap</h3><div class="sub">Next: SMS and WhatsApp-bot delivery, server-synced class rosters, community-hosted offline hubs on cheap devices, curriculum alignment with state boards.</div></div>
+<div class="card"><b>Team Reborn Innovators</b><div class="sub">Ashish Kumar · Hepzibah Toppo (Team Member)</div></div>
+</section>
+</div>
+<script src="shared.js"></script>
+<script>
+const $=i=>document.getElementById(i),KEY='lmt-v2';
+let S={p:{},plan:null,done:{},rev:{},gaps:[],xp:0,streak:0,last:'',les:{}},cur=null,sm=null,hist=[];
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function md(t){let h=esc(t);h=h.replace(/```(?:\w+)?\n([\s\S]*?)```/g,(_,c)=>'<pre>'+c+'</pre>').replace(/^#{1,3} (.*)$/gm,'<h3>$1</h3>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`\n]+)`/g,'<code>$1</code>');
+h=h.replace(/^(?:[-*] .*(?:\n|$))+/gm,m=>'<ul>'+m.trim().split('\n').map(l=>'<li>'+l.replace(/^[-*] /,'')+'</li>').join('')+'</ul>');
+return h.replace(/\n{2,}/g,'<br><br>').replace(/\n(?!<)/g,'<br>')}
+sm=Object.assign(async(p,o)=>{const x=await LMT.ai(p,{lang:S.p.lang||LMT.lang()});if(o&&o.onText)o.onText({text:x});return{text:x}},{json:p=>LMT.ai(p,{json:true,lang:S.p.lang||LMT.lang()})});
+const net=()=>{$('net').textContent=navigator.onLine?'● Online':'○ Offline';$('net').style.color=navigator.onLine?'#6fe0a5':'#ffb36b'};
+addEventListener('online',net);addEventListener('offline',net);net();
+function view(v){['home','learn','prog','pitch','teach'].forEach(x=>$('v-'+x).classList.toggle('hide',x!==v));document.querySelectorAll('nav [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(v==='prog')stats();scrollTo(0,0)}
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>view(b.dataset.go));
+$('th').onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#0e1118';r.setAttribute('data-theme',d?'light':'dark')};
+const ctx=()=>`Learner: ${S.p.nm||'student'}. Subject: ${S.p.subj}. Level: ${S.p.lvl}. Goal: ${S.p.goal||'mastery'}. Known gaps: ${S.gaps.join(', ')||'none yet'}. Write ALL output in ${S.p.lang}, using simple words for a first-generation learner with limited resources.`;
+const low=()=>S.p.net==='slow';
+$('diag').onclick=async()=>{const subj=$('subj').value.trim();if(!subj){$('gerr').textContent='Please enter a subject.';return}if(!sm)return;
+S.p={nm:$('nm').value.trim(),subj,lvl:$('lvl').value,lang:$('lang').value,net:$('net2').value,wks:+$('wks').value,goal:$('goal').value.trim()};S.gaps=[];
+$('diag').disabled=true;$('gerr').textContent='Preparing your diagnostic…';
+try{const q=await sm.json(`${ctx()} Create a 5-question multiple-choice diagnostic that tests prerequisite knowledge for "${subj}", from easy to harder, each tagged with the concept tested. Respond with ONLY JSON: [{"q":string,"options":[string,string,string,string],"answer":number,"topic":string}]`);
+$('gerr').textContent='';$('setup').classList.add('hide');const d=$('dg');d.classList.remove('hide');d.innerHTML='<h2 style="margin-top:0">2 · Quick gap check</h2><div class="sub">There is no pass or fail. This only shows where to start.</div>';let n=0;
+q.forEach(it=>{const c=document.createElement('div');c.className='card';c.innerHTML='<b>'+esc(it.q)+'</b>';
+it.options.forEach((o,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=o;b.onclick=()=>{if(c.dataset.l)return;c.dataset.l=1;if(i!==it.answer)S.gaps.push(it.topic);b.classList.add(i===it.answer?'r':'w');if(++n===q.length)makePlan()};c.appendChild(b)});d.appendChild(c)})
+}catch(e){$('gerr').textContent='Could not start. Please try again.'}$('diag').disabled=false};
+async function makePlan(){$('dg').insertAdjacentHTML('beforeend','<p class="sub" id="mk">Building your personal roadmap…</p>');
+try{const p=await sm.json(`${ctx()} Total ${S.p.wks} weeks. Build a complete basics-to-pro plan in exactly 4 stages: "Bridge the Gaps" (fix the known gaps first; if none, revise fundamentals), "Core", "Advanced", "Pro". Spread all weeks across stages. Each week: short title, 3 specific topics, one low-cost hands-on task needing no special equipment. Stage and week text in ${S.p.lang}. Respond with ONLY JSON: {"title":string,"stages":[{"name":string,"goal":string,"weeks":[{"week":number,"title":string,"topics":[string],"project":string}]}]}`);
+if(!p.stages)throw 0;S.plan=p;S.done={};save();$('dg').classList.add('hide');render()}catch(e){$('mk').textContent='Roadmap failed. Please reload and retry.'}}
+const keys=()=>{const r=[];S.plan.stages.forEach((s,i)=>(s.weeks||[]).forEach((w,j)=>(w.topics||[]).forEach((t,k)=>r.push(i+'-'+j+'-'+k))));return r};
+function render(){if(!S.plan){$('plan').classList.add('hide');$('setup').classList.remove('hide');return}
+$('setup').classList.add('hide');$('plan').classList.remove('hide');
+$('pt').textContent=S.plan.title||S.p.subj;$('pm').textContent=`${S.p.nm?S.p.nm+' · ':''}${S.p.lang} · ${S.p.wks} weeks · gaps targeted: ${S.gaps.join(', ')||'none'}`;
+const a=keys(),n=a.filter(k=>S.done[k]).length,pc=a.length?Math.round(n/a.length*100):0;$('pb').style.width=pc+'%';$('px').textContent=`${n}/${a.length} topics done (${pc}%)`;
+const bx=$('stages');bx.innerHTML='';
+S.plan.stages.forEach((s,i)=>{const d=document.createElement('div');d.innerHTML=`<div class="stage"><span class="pill">Stage ${i+1}</span><h3>${esc(s.name)}</h3><div class="sub">${esc(s.goal||'')}</div></div>`;
+(s.weeks||[]).forEach((w,j)=>{const c=document.createElement('div');c.className='card';c.innerHTML=`<b>Week ${esc(w.week)} · ${esc(w.title)}</b>`;
+(w.topics||[]).forEach((t,k)=>{const key=i+'-'+j+'-'+k,r=document.createElement('div');r.className='tp'+(S.done[key]?' d':'');
+r.innerHTML=`<input type="checkbox" ${S.done[key]?'checked':''}><a>${esc(t)}</a>${S.les[key]?'<span class="pill sub">saved</span>':''}`;
+r.querySelector('input').onchange=e=>{mark(key,e.target.checked)};r.querySelector('a').onclick=()=>open(key,t,w.title);c.appendChild(r)});
+c.insertAdjacentHTML('beforeend',`<div class="sub" style="margin-top:6px">✍️ ${esc(w.project||'')}</div><p class="noprint"><button class="btn g">⬇ Save week offline</button></p>`);
+c.querySelector('.btn').onclick=e=>pack(e.target,i,j,w);d.appendChild(c)});bx.appendChild(d)})}
+function mark(k,v){if(v&&!S.done[k]){S.xp+=10;const t=new Date().toDateString();if(S.last!==t){const y=new Date(Date.now()-864e5).toDateString();S.streak=S.last===y?S.streak+1:1;S.last=t}}
+if(v)S.done[k]=Date.now();else delete S.done[k];save();render()}
+$('rs').onclick=()=>{if(confirm('Discard this plan and start over?')){S={p:{},plan:null,done:{},rev:{},gaps:[],xp:0,streak:0,last:'',les:{}};save();$('tutor').classList.add('hide');$('dg').classList.add('hide');render()}};
+const lessonP=(t,w)=>`${ctx()} Course week: "${w}". Teach "${t}" from scratch. Use: ## Big idea, ## Step by step (with a simple everyday analogy), ## Worked example, ## Common mistakes, ## Try it (3 practice questions, no answers). `+(low()?'Keep under 180 words, plain text only.':'Keep under 400 words.');
+async function pack(btn,i,j,w){if(!sm)return;btn.disabled=true;const ts=w.topics||[];
+for(let k=0;k<ts.length;k++){const key=i+'-'+j+'-'+k;btn.textContent=`Saving ${k+1}/${ts.length}…`;if(!S.les[key]){try{const r=await sm(lessonP(ts[k],w.title));S.les[key]=r.text;save()}catch(e){btn.textContent='Failed, retry';btn.disabled=false;return}}}
+btn.textContent='✓ Saved offline';render()}
+function tab(t){$('pl').classList.toggle('hide',t!=='l');$('pq').classList.toggle('hide',t!=='q');$('pa').classList.toggle('hide',t!=='a');document.querySelectorAll('[data-t]').forEach(b=>b.className='btn'+(b.dataset.t===t?'':' g'))}
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tab(b.dataset.t);if(b.dataset.t==='q'&&!$('pq').innerHTML)quiz()});
+async function open(key,t,w){cur={key,t,w};$('pp').href='priya.html?practice='+encodeURIComponent(t)+'&lang='+encodeURIComponent(S.p.lang)+'&name='+encodeURIComponent(S.p.nm||'');hist=[];$('tutor').classList.remove('hide');$('tt').textContent=t;$('pq').innerHTML='';$('chat').innerHTML='';tab('l');$('tutor').scrollIntoView({behavior:'smooth'});
+if(S.les[key]){$('pl').innerHTML=md(S.les[key]);return}
+if(!sm){$('pl').textContent='No connection. Save this week offline when you are online.';return}
+$('pl').textContent='Preparing your lesson…';
+try{const r=await sm(lessonP(t,w),low()?{}:{onText:({text})=>{$('pl').innerHTML=md(text)}});S.les[key]=r.text;save();$('pl').innerHTML=md(r.text)}catch(e){$('pl').textContent='Lesson could not load. Check your connection and try again.'}}
+$('dn').onclick=()=>{if(cur)mark(cur.key,true)};
+$('spk').onclick=()=>{const t=$('pl').innerText;if(!window.speechSynthesis||!t)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),m={English:'en-IN',Hindi:'hi-IN',Bengali:'bn-IN',Tamil:'ta-IN',Telugu:'te-IN',Marathi:'mr-IN',Gujarati:'gu-IN',Kannada:'kn-IN'};u.lang=m[S.p.lang]||'en-IN';speechSynthesis.speak(u)};
+async function quiz(){if(!sm){$('pq').textContent='Quiz needs a connection.';return}$('pq').textContent='Building quiz…';
+try{const q=await sm.json(`${ctx()} Make a 4-question multiple-choice quiz on "${cur.t}", easy to hard. Respond with ONLY JSON: [{"q":string,"options":[string,string,string,string],"answer":number,"why":string}]`);
+let sc=0,n=0;const bx=$('pq');bx.innerHTML='';const fin=document.createElement('p');fin.style.fontWeight='700';
+q.forEach(it=>{const d=document.createElement('div');d.className='card';d.innerHTML='<b>'+esc(it.q)+'</b>';const ex=document.createElement('div');ex.className='sub';
+it.options.forEach((o,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=o;b.onclick=()=>{if(d.dataset.l)return;d.dataset.l=1;n++;const ok=i===it.answer;if(ok){sc++;S.xp+=5}b.classList.add(ok?'r':'w');d.querySelectorAll('.opt')[it.answer].classList.add('r');ex.textContent=it.why;
+if(n===q.length){S.rev[cur.key]=Date.now();save();fin.textContent=`Score ${sc}/${q.length}. `+(sc>=3?'Well done! Mark the topic done.':'Read the lesson again and ask the tutor.')}};d.appendChild(b)});d.appendChild(ex);bx.appendChild(d)});bx.appendChild(fin)
+}catch(e){$('pq').textContent='Quiz could not load. Try again.'}}
+document.querySelectorAll('[data-c]').forEach(c=>c.onclick=()=>{$('q').value=c.dataset.c;$('sd').click()});
+$('sd').onclick=async()=>{const t=$('q').value.trim();if(!t||!sm)return;$('q').value='';
+const add=(c,x)=>{const m=document.createElement('div');m.className='m '+c;m.innerHTML=c==='a'?md(x):esc(x);$('chat').appendChild(m);$('chat').scrollTop=1e9;return m};
+add('u',t);hist.push('Student: '+t);const m=add('a','…');$('sd').disabled=true;
+try{const r=await sm(`You are a patient, encouraging tutor. ${ctx()} Current topic: "${cur.t}". Answer briefly and clearly with an example, end with one check question.\n\n`+hist.join('\n'),{cache:false,onText:({text})=>{m.innerHTML=md(text);$('chat').scrollTop=1e9}});hist.push('Tutor: '+r.text)}catch(e){m.textContent='Sorry, could not answer. Please retry.'}$('sd').disabled=false};
+function stats(){$('s1').textContent=S.xp;$('s2').textContent=S.streak;$('s4').textContent=Object.keys(S.les).length;
+let n=0,a=0;if(S.plan){const k=keys();a=k.length;n=k.filter(x=>S.done[x]).length}$('s3').textContent=(a?Math.round(n/a*100):0)+'%';
+$('gp').textContent=S.gaps.length?S.gaps.join(' · '):(S.plan?'No gaps found. Great base!':'Take the diagnostic in Learn.');
+const due=[];if(S.plan)S.plan.stages.forEach((s,i)=>(s.weeks||[]).forEach((w,j)=>(w.topics||[]).forEach((t,k)=>{const key=i+'-'+j+'-'+k;if(S.done[key]&&Date.now()-(S.rev[key]||S.done[key])>1728e5)due.push(t)})));
+$('rv').textContent=due.length?due.join(' · '):'Nothing due yet.';
+const msg=`Progress report: ${S.p.nm||'Learner'} is learning ${S.p.subj||'-'} with Last Mile Tutor. ${n}/${a} topics done, ${S.xp} XP, ${S.streak}-day streak. Gaps: ${S.gaps.join(', ')||'none'}.`;
+$('wa').href='https://wa.me/?text='+encodeURIComponent(msg)}
+render();
+</script><script>
+/* ===== SUITE UPGRADE: teacher dashboard, Priya handoff, language sync ===== */
+(()=>{
+const P=new URLSearchParams(location.search),A=()=>LMT.st().asg||{},C=()=>LMT.st().cls||{};
+if(P.get('lang')&&LMT.LANGS[P.get('lang')])LMT.set({lang:P.get('lang')});
+$('lang').value=LMT.lang();$('lang').onchange=()=>LMT.set({lang:$('lang').value});
+if(P.get('subj'))$('subj').value=P.get('subj');if(P.get('goal'))$('goal').value=P.get('goal');if(P.get('name'))$('nm').value=P.get('name');
+$('tl').innerHTML=Object.keys(LMT.LANGS).map(l=>`<option ${l===LMT.lang()?'selected':''}>${l}</option>`).join('');
+$('mic').onclick=()=>{LMT.listen(t=>{$('q').value=t},S.p.lang)};
+
+function addReports(txt){let n=0;txt.split(/\s+/).forEach(w=>{const m=w.match(/#r=([\w-]+)/),o=LMT.dec(m?m[1]:w);if(!o||o.v!==1||!o.n)return;
+ const c=C(),prev=c[o.n]||{};c[o.n]={...o,u:Date.now()};LMT.set({cls:c});
+ if(o.a){const as=A();const x=as[o.a.id]||(as[o.a.id]={id:o.a.id,ti:'Assigned test',n:o.a.o,d:'',r:{}});x.r=x.r||{};x.r[o.n]={s:o.a.s,o:o.a.o};LMT.set({asg:as})}n++});return n}
+const avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0;
+function renderTeacher(){const c=Object.values(C()),tm={};c.forEach(s=>Object.entries(s.m||{}).forEach(([k,v])=>(tm[k]=tm[k]||[]).push(v)));
+ const ta=Object.entries(tm).map(([k,a])=>[k,avg(a)]).sort((a,b)=>a[1]-b[1]);
+ $('t1').textContent=c.length;$('t2').textContent=avg(c.filter(s=>s.q>0).map(s=>s.acc))+'%';$('t3').textContent=ta.length?ta[0][0]+' '+ta[0][1]+'%':'-';$('t4').textContent=c.filter(s=>s.q>0&&s.acc<50).length;
+ const wk=s=>{const e=Object.entries(s.m||{}).sort((a,b)=>a[1]-b[1])[0];return e?e[0]+' '+e[1]+'%':'-'};
+ $('ttab').innerHTML=c.length?'<tr><th>Learner</th><th>Accuracy</th><th>Questions</th><th>XP</th><th>Streak</th><th>Weakest</th><th>Last test</th></tr>'+c.sort((a,b)=>a.acc-b.acc).map(s=>{const lt=(s.t||[]).slice(-1)[0];return`<tr data-n="${esc(s.n)}" style="cursor:pointer;${s.q>0&&s.acc<50?'background:color-mix(in srgb,var(--bad) 12%,transparent)':''}"><td><b>${esc(s.n)}</b></td><td>${s.acc}%</td><td>${s.q}</td><td>${s.xp}</td><td>${s.st}🔥</td><td>${esc(wk(s))}</td><td>${lt?lt.s+'/'+lt.o:'-'}</td></tr>`}).join(''):'<tr><td class="sub">No learners yet. Paste report links above.</td></tr>';
+ $('ttab').querySelectorAll('tr[data-n]').forEach(r=>r.onclick=()=>{const s=C()[r.dataset.n];if(!s)return;$('tdet').classList.remove('hide');$('tdet').innerHTML=`<h3>${esc(s.n)}</h3><div class="sub">Tap a learner to review. Updated ${new Date(s.u).toLocaleString()}</div>`+Object.entries(s.m||{}).map(([k,v])=>`<div style="margin:8px 0"><div class="sub" style="display:flex;justify-content:space-between"><span>${esc(k)}</span><span>${v}%</span></div><div class="bar"><i style="width:${v}%"></i></div></div>`).join('')+'<h3 style="margin-top:12px">Tests</h3>'+((s.t||[]).length?'<table>'+(s.t||[]).slice().reverse().map(t=>`<tr><td>${esc(t.ti)}</td><td>${t.s}/${t.o} (${Math.round(t.s/t.o*100)}%)</td><td>${esc(t.d)}</td></tr>`).join('')+'</table>':'<div class="sub">No tests yet.</div>')});
+ const as=Object.values(A());$('tas').innerHTML=as.length?as.map(x=>`<div style="margin:8px 0"><b>${esc(x.ti)}</b> <span class="sub">${esc(x.d||'')} · ${x.n||'?'} questions · ${Object.keys(x.r||{}).length}/${c.length} submitted</span>${Object.entries(x.r||{}).map(([n,r])=>`<div class="sub">${esc(n)}: ${r.s}/${r.o} (${Math.round(r.s/r.o*100)}%)</div>`).join('')}</div>`).join(''):'No assignments yet.'}
+$('timp').onclick=()=>{const n=addReports($('tin').value);$('tmsg').textContent=n?`Added ${n} learner${n>1?'s':''}.`:'No valid report found. Ask the learner to share from Priya.';if(n)$('tin').value='';renderTeacher()};
+$('tclr').onclick=()=>{if(confirm('Remove all learners and assignments from this browser?')){LMT.set({cls:{},asg:{}});renderTeacher()}};
+$('tgen').onclick=async()=>{const tp=$('ttp').value.trim(),n=+$('tn').value,l=$('tl').value,m=$('tmsg2');if(!tp){m.textContent='Enter a topic.';return}$('tgen').disabled=true;m.textContent='Generating…';
+ try{const qs=(await LMT.ai(`Write ${n} multiple-choice questions on "${tp}" for school learners, easy to hard, 4 options, exactly one correct. Write in ${l}. JSON array: [{"q":string,"opts":[4 strings],"ans":0-3,"topic":"${tp}","level":1-3,"explain":one line}]`,{json:true,lang:l})).filter(q=>q&&q.q&&Array.isArray(q.opts)&&q.opts.length===4&&q.ans>=0&&q.ans<4);if(qs.length<2)throw 0;
+ const id='A'+Date.now().toString(36),as=A();as[id]={id,ti:tp,n:qs.length,d:new Date().toISOString().slice(0,10),r:{}};LMT.set({asg:as});
+ const link=LMT.url('priya.html','#t='+LMT.enc({id,ti:tp,qs}));m.innerHTML=`✓ ${qs.length} questions ready. Send this link to learners:`;$('tlink').classList.remove('hide');$('tlink').innerHTML=`<input readonly value="${link}"><p><button class="btn" id="tcp">Copy link</button> <a class="btn g" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('New test on '+tp+': '+link)}">Share on WhatsApp</a></p>`;$('tcp').onclick=()=>LMT.copy(link);renderTeacher()}
+ catch(e){m.textContent='Could not generate. Check that the backend is deployed and ANTHROPIC_API_KEY is set.'}$('tgen').disabled=false};
+
+function suite(){const s=LMT.st(),T=(s.tests||[]).slice(-5).reverse(),pm=s.pm||{};
+ $('ps').innerHTML=s.pacc==null&&!T.length?'No Priya practice yet. <a href="priya.html">Open Priya →</a>':`Accuracy <b>${s.pacc||0}%</b> · ${s.pxp||0} XP. Weakest: <b>${Object.entries(pm).sort((a,b)=>a[1]-b[1]).slice(0,2).map(e=>esc(e[0])+' '+e[1]+'%').join(', ')||'-'}</b>${T.length?'<table>'+T.map(t=>`<tr><td>${esc(t.ti)}</td><td>${t.s}/${t.o}</td><td>${esc(t.d)}</td></tr>`).join('')+'</table>':''}<p><a class="btn g" href="priya.html">Practice in Priya →</a></p>`}
+const _v=view;window.view=v=>{_v(v);if(v==='teach')renderTeacher();if(v==='prog')suite()};
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
+const h=location.hash;if(h.startsWith('#r=')){const n=addReports(h);history.replaceState(null,'',location.pathname);view('teach');$('tmsg').textContent=n?'Report imported.':'That report link was not valid.'}else if(h==='#teacher')view('teach');
+suite();
+})();
+</script>
+
+</body></html>

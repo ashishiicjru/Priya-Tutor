@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priya - Adaptive Exam Prep Tutor</title>
+<meta name="theme-color" content="#07070f">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  *{scrollbar-width:thin;scrollbar-color:#ff2d55 transparent}
+  body{font-family:Inter,system-ui,-apple-system,sans-serif;background:#07070f;color:#fff}
+  .grad{background:linear-gradient(135deg,#ff2d55,#a855f7,#ec4899)}
+  .grad-text{background:linear-gradient(90deg,#ff2d55,#ec4899,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .glass{background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1)}
+  .card{background:#141422;border:1px solid rgba(255,255,255,.08)}
+  .card:hover{border-color:rgba(255,45,85,.45)}
+  .tab-btn.active{background:#ff2d55!important;color:#fff!important}
+  .topic-btn.active{background:#ff2d55!important;color:#fff!important}
+  .mastery-bar{height:8px;background:#2a2a3a;border-radius:99px;overflow:hidden}
+  .mastery-fill{height:100%;transition:width .6s;background:linear-gradient(90deg,#ff2d55,#a855f7)}
+  .opt{transition:.15s;cursor:pointer}
+  .opt:hover{border-color:#ff2d55;background:#1f1f33}
+  .opt.correct{background:#14532d!important;border-color:#22c55e!important}
+  .opt.wrong{background:#7f1d1d!important;border-color:#ef4444!important}
+  .opt.selected{border-color:#ff2d55!important;background:#2a1520!important}
+  .opt:disabled{cursor:default;opacity:.95}
+  #priyaImg{filter:drop-shadow(0 20px 40px rgba(255,45,85,.45));animation:breathe 3.2s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .talking{animation:talk .22s infinite alternate!important}
+  @keyframes talk{from{transform:scale(1)}to{transform:scale(1.03)}}
+  .glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,45,85,.35),transparent 70%);filter:blur(10px)}
+  ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#ff2d55;border-radius:10px}
+  .wave{display:inline-block;animation:wv 1s infinite}
+  @keyframes wv{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+  .chip{font-size:11px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.08);white-space:nowrap}
+  .hero-grid{background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:22px 22px}
+  .marquee{animation:marq 18s linear infinite}
+  @keyframes marq{to{transform:translateX(-50%)}}
+  .fade-in{animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  input,select{color-scheme:dark}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="topBar" class="hidden sticky top-0 z-40 bg-[#0c0c18]/92 backdrop-blur border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-2 flex-wrap">
+    <button onclick="goHome()" class="flex items-center gap-2">
+      <span class="w-9 h-9 rounded-full grad flex items-center justify-center font-black">P</span>
+      <span class="text-left"><span class="block text-[15px] font-black leading-none">PRIYA <span class="grad-text">ADAPTIVE TUTOR</span></span><span class="text-[11px] text-zinc-400">Learner Model • Adaptive • Free</span></span>
+    </button>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="chip">🔥 <b id="streakVal">0</b> Day Streak</span>
+      <span class="chip">⭐ <b id="xpVal">0</b> XP</span>
+      <span class="chip">🎯 <b id="levelVal">Beginner</b></span>
+      <button onclick="openProfile()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">👤 <span id="userNameLabel">Guest</span></button>
+      <button onclick="goHome()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">🏠 Home</button>
+      <button onclick="resetAll()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">Reset</button>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 pb-2 flex gap-2 overflow-x-auto">
+    <button data-tab="dashboard" onclick="showTab('dashboard',this)" class="tab-btn active text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📊 Dashboard</button>
+    <button data-tab="learn" onclick="showTab('learn',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📚 Learn</button>
+    <button data-tab="practice" onclick="showTab('practice',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🎯 Practice</button>
+    <button data-tab="mock" onclick="showTab('mock',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📝 Mock Test</button>
+    <button data-tab="pdf" onclick="showTab('pdf',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📄 PDF Teacher</button>
+    <button data-tab="review" onclick="showTab('review',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🔁 Review</button>
+    <button data-tab="chat" onclick="showTab('chat',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">💬 Ask Priya</button>
+  </div>
+</header>
+
+<!-- ============ HOMEPAGE ============ -->
+<div id="page-home">
+  <!-- HERO -->
+  <section class="hero-grid relative overflow-hidden">
+    <div class="absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full bg-pink-600/25 blur-[90px]"></div>
+    <div class="absolute top-40 right-0 w-[380px] h-[380px] rounded-full bg-purple-600/25 blur-[90px]"></div>
+    <div class="max-w-7xl mx-auto px-4 pt-5 pb-10 relative">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2"><span class="w-10 h-10 rounded-full grad flex items-center justify-center font-black text-lg">P</span><span class="font-black">PRIYA <span class="grad-text">ADAPTIVE TUTOR</span></span></div>
+        <div class="flex gap-2"><button onclick="openProfile()" class="bg-white/10 px-4 py-2 rounded-full text-sm">👤 <span id="homeNameLabel">Guest</span></button><button onclick="enterApp('dashboard')" class="grad px-4 py-2 rounded-full text-sm font-bold">Open App →</button></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 items-center mt-10">
+        <div class="fade-in">
+          <span class="text-xs bg-white/10 border border-white/10 px-3 py-1.5 rounded-full">● LIVE • ADAPTIVE LEARNER MODEL • NO SIGN UP NEEDED</span>
+          <h1 class="text-[42px] leading-[1.05] md:text-[60px] font-black mt-5">Your Exam Prep,<br><span class="grad-text">That Adapts</span><br>To How You Learn.</h1>
+          <p class="text-zinc-400 mt-4 text-[16px] leading-relaxed max-w-[520px]">Priya remembers what you know, what you forget, and where you make mistakes. Then it changes every lesson, question and mock test to fit you.</p>
+          <div class="flex gap-2 mt-6 flex-wrap">
+            <button onclick="startFreeDiagnostic()" class="grad px-6 py-3 rounded-full font-bold">▶ Start Free Diagnostic - 2 Min</button>
+            <button onclick="enterApp('learn')" class="bg-white/10 px-6 py-3 rounded-full font-bold">Browse Lessons</button>
+          </div>
+          <div class="flex gap-6 mt-6 text-sm">
+            <div><p class="font-black text-xl" id="homeAccuracy">0%</p><p class="text-zinc-400 text-xs">Your Accuracy</p></div>
+            <div><p class="font-black text-xl" id="homeQuestions">0</p><p class="text-zinc-400 text-xs">Questions Done</p></div>
+            <div><p class="font-black text-xl" id="homeMastery">0%</p><p class="text-zinc-400 text-xs">Avg Mastery</p></div>
+            <div><p class="font-black text-xl">5</p><p class="text-zinc-400 text-xs">Subjects</p></div>
+          </div>
+          <div class="flex gap-2 mt-6 flex-wrap">
+            <span class="chip">✓ Learner Model</span><span class="chip">✓ Adaptive Difficulty</span><span class="chip">✓ Mistake Memory</span><span class="chip">✓ Spaced Review</span><span class="chip">✓ PDF Teacher</span>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="glass rounded-[28px] p-4 relative overflow-hidden">
+            <div class="flex items-center justify-between"><p class="text-xs font-bold tracking-widest text-zinc-400">LIVE LEARNER MODEL</p><span class="text-xs bg-green-600 px-2 py-1 rounded-full">● Online</span></div>
+            <div class="flex gap-4 mt-4">
+              <div class="relative shrink-0"><div class="glow"></div><img id="priyaImgHome" src="priya.png" onerror="this.src='https://via.placeholder.com/180x240/ff2d55/ffffff?text=Priya'" class="relative w-[160px] h-[215px] object-cover rounded-2xl cursor-pointer" onclick="priyaSay(getTutorReply('hello'))"></div>
+              <div class="flex-1 min-w-0">
+                <p class="font-bold">Priya Says:</p>
+                <p id="priyaSpeakingHome" class="text-sm text-zinc-300 mt-1 leading-relaxed">Hello! I will find your weak topics in 2 minutes, then build a plan just for you.</p>
+                <div class="flex gap-2 mt-3 flex-wrap"><button onclick="startFreeDiagnostic()" class="grad px-3 py-1.5 rounded-full text-xs font-bold">Start Diagnostic</button><button onclick="speakLast()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">🔊 Listen</button></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-4">
+              <div class="bg-black/30 rounded-xl p-3 text-center"><p class="text-[11px] text-zinc-400">Weakest Topic</p><p class="font-bold text-sm mt-1" id="homeWeakest">Start Now</p></div>
+              <div class="bg-black/30 rounded-xl p-3 text-center"><p class="text-[11px] text-zinc-400">Next Lesson</p><p class="font-bold text-sm mt-1" id="homeNextLesson">Fractions L1</p></div>
+              <div class="bg-black/30 rounded-xl p-3 text-center"><p class="text-[11px] text-zinc-400">Today Goal</p><p class="font-bold text-sm mt-1" id="homeGoal">10 Questions</p></div>
+            </div>
+          </div>
+          <div class="absolute -bottom-4 left-4 right-4 glass rounded-2xl px-4 py-3 flex items-center justify-between"><div><p class="text-xs text-zinc-400">Your Level</p><p class="font-black" id="homeLevel">Beginner • Level 1</p></div><div class="w-1/2"><div class="mastery-bar"><div id="homeLevelBar" class="mastery-fill" style="width:10%"></div></div><p class="text-[11px] text-zinc-400 mt-1 text-right" id="homeLevelPct">10% to Next Level</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="border-y border-white/10 bg-black/30 overflow-hidden py-2"><div class="flex gap-8 whitespace-nowrap marquee w-max text-sm text-zinc-300"><span>🍕 Fractions &nbsp;•&nbsp; 🔢 Algebra &nbsp;•&nbsp; 📐 Geometry &nbsp;•&nbsp; 🔬 Science &nbsp;•&nbsp; 📖 English &nbsp;•&nbsp; 📝 Mock Tests &nbsp;•&nbsp; 📄 PDF Teacher &nbsp;•&nbsp; 🔁 Spaced Review &nbsp;•&nbsp;</span><span>🍕 Fractions &nbsp;•&nbsp; 🔢 Algebra &nbsp;•&nbsp; 📐 Geometry &nbsp;•&nbsp; 🔬 Science &nbsp;•&nbsp; 📖 English &nbsp;•&nbsp; 📝 Mock Tests &nbsp;•&nbsp; 📄 PDF Teacher &nbsp;•&nbsp; 🔁 Spaced Review &nbsp;•&nbsp;</span></div></div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="max-w-7xl mx-auto px-4 py-12">
+    <p class="text-xs tracking-[3px] text-pink-400 font-bold">HOW PRIYA WORKS</p>
+    <h2 class="text-3xl font-black mt-2">Not One-Size-Fits-All.<br>Built Around <span class="grad-text">Your Brain.</span></h2>
+    <div class="grid md:grid-cols-4 gap-3 mt-6">
+      <div class="card rounded-3xl p-5"><div class="w-10 h-10 rounded-full grad flex items-center justify-center font-black">1</div><h3 class="font-bold mt-3">Diagnostic Test</h3><p class="text-sm text-zinc-400 mt-1">Answer 6 quick questions. Priya finds your exact level in each subject.</p><button onclick="startFreeDiagnostic()" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Take It →</button></div>
+      <div class="card rounded-3xl p-5"><div class="w-10 h-10 rounded-full grad flex items-center justify-center font-black">2</div><h3 class="font-bold mt-3">Learner Model</h3><p class="text-sm text-zinc-400 mt-1">Priya builds your profile: mastery, speed, mistakes, weak areas. It updates after every answer.</p><button onclick="enterApp('dashboard')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">See My Model →</button></div>
+      <div class="card rounded-3xl p-5"><div class="w-10 h-10 rounded-full grad flex items-center justify-center font-black">3</div><h3 class="font-bold mt-3">Adaptive Practice</h3><p class="text-sm text-zinc-400 mt-1">2 correct in a row = Level Up. 2 wrong = Level Down + Hint + Simpler explanation.</p><button onclick="enterApp('practice')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Practice Now →</button></div>
+      <div class="card rounded-3xl p-5"><div class="w-10 h-10 rounded-full grad flex items-center justify-center font-black">4</div><h3 class="font-bold mt-3">Review + Mock</h3><p class="text-sm text-zinc-400 mt-1">Priya brings back your mistakes at the right time, then tests you with a real mock.</p><button onclick="enterApp('mock')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Start Mock →</button></div>
+    </div>
+  </section>
+
+  <!-- SUBJECTS -->
+  <section class="max-w-7xl mx-auto px-4 pb-12">
+    <div class="flex justify-between items-end flex-wrap gap-2"><div><h2 class="text-3xl font-black">Choose Your Subject</h2><p class="text-zinc-400 text-sm mt-1">Every subject has 4 levels, from Easy to Expert.</p></div><button onclick="enterApp('dashboard')" class="grad px-5 py-2 rounded-full text-sm font-bold">Open Dashboard →</button></div>
+    <div id="homeSubjects" class="grid md:grid-cols-5 gap-3 mt-5"></div>
+  </section>
+
+  <!-- ADAPTIVE DEMO -->
+  <section class="max-w-7xl mx-auto px-4 pb-12">
+    <div class="card rounded-3xl p-6 grid md:grid-cols-2 gap-6 items-center">
+      <div><span class="text-xs bg-pink-600 px-3 py-1 rounded-full">TRY IT LIVE</span><h3 class="text-2xl font-black mt-3">See Adaptation In Action</h3><p class="text-zinc-400 text-sm mt-2">Answer this question. If you get it right, the next one gets harder. If you get it wrong, Priya explains and makes it easier.</p><div class="mt-4"><p class="text-sm">Question: What is 1/2 + 1/2 ?</p><div class="grid grid-cols-2 gap-2 mt-3" id="homeDemoOpts"></div><p id="homeDemoFeedback" class="text-sm mt-3 min-h-[20px]"></p></div></div>
+      <div class="bg-black/30 rounded-2xl p-5"><h4 class="font-bold">📊 Your Live Model</h4><div class="space-y-3 mt-4" id="homeModelPreview"></div><p class="text-xs text-zinc-400 mt-4">This is a live preview. Your real model is saved even after you close the browser.</p></div>
+    </div>
+  </section>
+
+  <!-- PDF + FEATURES -->
+  <section class="max-w-7xl mx-auto px-4 pb-12">
+    <div class="grid md:grid-cols-3 gap-3">
+      <div class="card rounded-3xl p-5"><h3 class="font-bold text-lg">📄 PDF Teacher</h3><p class="text-sm text-zinc-400 mt-1">Upload any book or notes PDF. Priya reads it and makes lessons, key points, quiz and a 7-day plan from it.</p><button onclick="enterApp('pdf')" class="grad px-4 py-2 rounded-full text-sm font-bold mt-4">Upload PDF →</button></div>
+      <div class="card rounded-3xl p-5"><h3 class="font-bold text-lg">🔁 Mistake Memory</h3><p class="text-sm text-zinc-400 mt-1">Priya never forgets your mistakes. It shows them again in Review until you master them.</p><button onclick="enterApp('review')" class="bg-white/10 px-4 py-2 rounded-full text-sm font-bold mt-4">Open Review →</button></div>
+      <div class="card rounded-3xl p-5"><h3 class="font-bold text-lg">💬 Ask Priya</h3><p class="text-sm text-zinc-400 mt-1">Ask any doubt by typing or voice. Priya explains in simple language with examples.</p><button onclick="enterApp('chat')" class="bg-white/10 px-4 py-2 rounded-full text-sm font-bold mt-4">Chat Now →</button></div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD / PROOF -->
+  <section class="max-w-7xl mx-auto px-4 pb-12">
+    <div class="card rounded-3xl p-6 flex flex-col md:flex-row justify-between gap-4 items-center"><div><h3 class="text-2xl font-black">Start Today. Improve Every Day.</h3><p class="text-zinc-400 text-sm mt-1">10 questions a day = 300 questions a month. That is how toppers are made.</p></div><div class="flex gap-2"><button onclick="startFreeDiagnostic()" class="grad px-6 py-3 rounded-full font-bold">Start Free →</button><button onclick="enterApp('mock')" class="bg-white/10 px-6 py-3 rounded-full font-bold">Mock Test</button></div></div>
+  </section>
+  <footer class="border-t border-white/10 py-5 text-center text-xs text-zinc-500">Priya Adaptive Tutor • Learner Model • Works Offline After Load • Your Data Stays In Your Browser</footer>
+</div>
+
+<!-- ============ APP ============ -->
+<main id="page-app" class="hidden max-w-7xl mx-auto px-4 py-4">
+
+<!-- DASHBOARD -->
+<section id="tab-dashboard">
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="md:col-span-2 card rounded-3xl p-5 relative overflow-hidden">
+      <div class="flex gap-5">
+        <div class="relative shrink-0 hidden sm:block"><div class="glow"></div><img id="priyaImg" src="priya.png" onerror="this.src='https://via.placeholder.com/180x240/ff2d55/ffffff?text=Priya'" class="relative w-[170px] h-[230px] object-cover rounded-2xl cursor-pointer" onclick="priyaSay(getTutorReply('hello'))"><div id="voiceWave" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 gap-1 bg-black/70 px-2 py-1 rounded-full"><span class="wave w-1 h-3 bg-pink-500 rounded"></span><span class="wave w-1 h-5 bg-purple-400 rounded"></span><span class="wave w-1 h-3 bg-pink-500 rounded"></span></div></div>
+        <div class="flex-1">
+          <p class="text-xs tracking-widest text-pink-400 font-bold">ADAPTIVE TUTOR • LEARNER MODEL ACTIVE</p>
+          <h2 class="text-2xl font-black mt-1">Hello <span id="helloName" class="text-pink-400">Learner</span>,<br>Ready to level up?</h2>
+          <p id="priyaSpeaking" class="text-sm text-zinc-300 mt-2 min-h-[40px]">I analyzed your learning pattern. Let us start with your weakest topic first.</p>
+          <div class="flex gap-2 mt-3 flex-wrap"><button onclick="startAdaptive()" class="grad px-4 py-2 rounded-full text-sm font-bold">▶ Start Adaptive Session</button><button onclick="showTab('practice',document.querySelector('[data-tab=practice]'))" class="bg-white/10 px-4 py-2 rounded-full text-sm">Practice Weak Topics</button><button onclick="speakLast()" class="bg-white/10 px-3 py-2 rounded-full text-sm">🔊 Listen</button></div>
+          <div class="mt-4 grid grid-cols-3 gap-2 text-center"><div class="glass rounded-xl p-2"><p class="text-xl font-black" id="statAccuracy">0%</p><p class="text-[11px] text-zinc-400">Accuracy</p></div><div class="glass rounded-xl p-2"><p class="text-xl font-black" id="statAnswered">0</p><p class="text-[11px] text-zinc-400">Questions</p></div><div class="glass rounded-xl p-2"><p class="text-xl font-black" id="statMastery">0%</p><p class="text-[11px] text-zinc-400">Avg Mastery</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">📈 Your Progress</h3><div class="h-[180px] mt-2"><canvas id="progressChart"></canvas></div><div class="mt-3"><p class="text-xs text-zinc-400 flex justify-between"><span>Next Goal</span><span id="nextGoalText">Complete 10 questions</span></p><div class="mastery-bar mt-1"><div id="goalBar" class="mastery-fill" style="width:0%"></div></div></div><div class="mt-4 flex gap-2"><button onclick="startFreeDiagnostic()" class="flex-1 grad py-2 rounded-full text-xs font-bold">Retake Diagnostic</button><button onclick="showTab('mock',document.querySelector('[data-tab=mock]'))" class="flex-1 bg-white/10 py-2 rounded-full text-xs">Mock Test</button></div></div>
+  </div>
+  <h3 class="font-bold mt-6 mb-3">🧠 Your Learner Model - Mastery by Topic</h3>
+  <div id="masteryGrid" class="grid md:grid-cols-3 gap-3"></div>
+  <div class="grid md:grid-cols-2 gap-4 mt-4">
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">🎯 Recommended Next - Based on Your Model</h3><div id="recommendBox" class="mt-3 space-y-2"></div></div>
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">⚠️ Common Mistakes - I Remember Them</h3><div id="mistakeBox" class="mt-3 space-y-2 text-sm text-zinc-300"></div></div>
+  </div>
+</section>
+
+<!-- LEARN -->
+<section id="tab-learn" class="hidden">
+  <div class="flex gap-2 flex-wrap mb-4" id="topicTabs"></div>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="md:col-span-2 card rounded-3xl p-5">
+      <div class="flex justify-between items-start gap-2"><div><h3 id="learnTitle" class="text-xl font-black">Fractions - Basics</h3><p class="text-xs text-zinc-400"><span id="learnLevel">Level 1 • Easy</span> • <span id="learnMastery">Mastery 0%</span></p></div><span id="learnBadge" class="text-xs bg-green-600 px-3 py-1 rounded-full shrink-0">EASY</span></div>
+      <div id="learnContent" class="mt-4 space-y-3 text-[15px] leading-relaxed text-zinc-200"></div>
+      <div class="flex gap-2 mt-5 flex-wrap"><button onclick="explainSimpler()" class="bg-pink-600 px-4 py-2 rounded-full text-sm">👶 Explain Simpler</button><button onclick="explainWithExample()" class="bg-purple-600 px-4 py-2 rounded-full text-sm">💡 Example</button><button onclick="explainWithStory()" class="bg-white/10 px-4 py-2 rounded-full text-sm">📖 Story Mode</button><button onclick="markUnderstood()" class="bg-green-600 px-4 py-2 rounded-full text-sm">✓ Got It</button><button onclick="markConfused()" class="bg-yellow-600 px-4 py-2 rounded-full text-sm">😕 Still Confused</button></div>
+      <div class="flex gap-2 mt-3"><button onclick="prevLesson()" class="bg-white/10 px-4 py-2 rounded-full text-sm">← Prev Level</button><button onclick="nextLesson()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Next Level →</button><button onclick="showTab('practice',document.querySelector('[data-tab=practice]')); startPracticeTopic(currentTopic)" class="grad px-4 py-2 rounded-full text-sm font-bold">Practice This Topic →</button></div>
+    </div>
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">💬 Priya Explains</h3><div id="learnChat" class="mt-3 space-y-2 text-sm max-h-[320px] overflow-y-auto"></div><div class="flex gap-2 mt-3"><input id="learnInput" onkeypress="if(event.key==='Enter') askLearn()" placeholder="Ask about this topic..." class="flex-1 bg-black/40 rounded-full px-3 py-2 text-sm outline-none border border-white/10"><button onclick="askLearn()" class="grad w-9 h-9 rounded-full shrink-0">➤</button></div></div>
+  </div>
+</section>
+
+<!-- PRACTICE -->
+<section id="tab-practice" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto">
+    <div class="flex justify-between flex-wrap gap-2"><div><h3 class="font-bold">Adaptive Practice</h3><p class="text-xs text-zinc-400">2 right in a row = Level Up. 2 wrong = Level Down + Hint.</p></div><div class="text-right"><p class="text-xs">Current Difficulty</p><p id="practiceLevelLabel" class="font-black text-pink-400">Level 1 - Easy</p><p class="text-xs">Streak in session: <b id="sessionStreak">0</b></p></div></div>
+    <div class="flex gap-2 mt-3 flex-wrap" id="practiceTopicTabs"></div>
+    <div class="mastery-bar mt-3"><div id="practiceProgress" class="mastery-fill" style="width:0%"></div></div>
+    <div id="practiceBox" class="mt-5"></div>
+    <div id="practiceFeedback" class="mt-3 text-sm"></div>
+    <div class="flex gap-2 mt-4 flex-wrap"><button onclick="nextPractice()" class="grad px-5 py-2 rounded-full text-sm font-bold">Next Question →</button><button onclick="showHint()" class="bg-white/10 px-4 py-2 rounded-full text-sm">💡 Hint</button><button onclick="skipPractice()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Skip</button></div>
+  </div>
+</section>
+
+<!-- MOCK -->
+<section id="tab-mock" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto">
+    <div id="mockSetup"><h3 class="text-xl font-black">Mock Test - Real Exam Simulation</h3><p class="text-sm text-zinc-400 mt-1">10 questions • Mixed difficulty • Timer • Instant result + Learner Model update</p><div class="grid grid-cols-3 gap-2 mt-4"><select id="mockTopic" class="bg-black/40 rounded-xl px-3 py-2 text-sm outline-none"><option value="all">All Topics</option><option value="fractions">Fractions</option><option value="algebra">Algebra</option><option value="geometry">Geometry</option><option value="science">Science</option><option value="english">English</option></select><select id="mockTime" class="bg-black/40 rounded-xl px-3 py-2 text-sm outline-none"><option value="600">10 Minutes</option><option value="300">5 Minutes</option><option value="1200">20 Minutes</option></select><button onclick="startMock()" class="grad rounded-xl py-2 text-sm font-bold">Start Test →</button></div><div class="mt-4 bg-black/30 rounded-xl p-3 text-sm"><p class="font-bold">Last Mock Result: <span id="lastMockText">No test yet</span></p></div></div>
+    <div id="mockBox" class="hidden"><div class="flex justify-between"><p class="text-sm">Question <b id="mockQNo">1</b> / 10</p><p class="font-black text-pink-400" id="mockTimer">10:00</p></div><div class="mastery-bar mt-2"><div id="mockBar" class="mastery-fill" style="width:10%"></div></div><div id="mockQ" class="mt-4"></div><button onclick="nextMock()" class="grad px-5 py-2 rounded-full text-sm font-bold mt-4">Next →</button></div>
+    <div id="mockResult" class="hidden mt-4"></div>
+  </div>
+</section>
+
+<!-- PDF -->
+<section id="tab-pdf" class="hidden">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card rounded-3xl p-5"><h3 class="font-bold text-lg">📄 Upload Book / Notes PDF</h3><p class="text-sm text-zinc-400">Priya reads it, creates lessons, questions and a study plan from it.</p><label class="block mt-4 text-center bg-white/10 hover:bg-pink-600 cursor-pointer py-6 rounded-2xl border-2 border-dashed border-white/20">📄 Choose PDF<input type="file" accept=".pdf" hidden onchange="readPDF(this)"></label><p id="pdfStatus" class="text-xs text-pink-300 mt-2">No PDF yet.</p><div id="pdfActions" class="hidden gap-2 mt-3 flex-wrap"><button onclick="explainPDF('easy')" class="bg-pink-600 px-3 py-2 rounded-full text-xs">✨ Easy Explain</button><button onclick="explainPDF('points')" class="bg-purple-600 px-3 py-2 rounded-full text-xs">📝 Key Points</button><button onclick="explainPDF('quiz')" class="bg-white/10 px-3 py-2 rounded-full text-xs">🎯 Make Quiz</button><button onclick="explainPDF('plan')" class="bg-yellow-600 px-3 py-2 rounded-full text-xs">📅 Study Plan</button></div><div class="mt-4"><p class="text-xs text-zinc-400 mb-2">Or paste text:</p><textarea id="pdfPaste" rows="3" placeholder="Paste any paragraph here..." class="w-full bg-black/40 rounded-xl px-3 py-2 text-sm outline-none border border-white/10"></textarea><button onclick="usePastedText()" class="bg-white/10 px-4 py-2 rounded-full text-xs mt-2">Use This Text →</button></div></div>
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">📖 Priya Explanation</h3><div id="pdfOutput" class="mt-3 text-sm space-y-2 max-h-[420px] overflow-y-auto text-zinc-200">Upload a PDF to see explanation here.</div><div class="flex gap-2 mt-3"><button onclick="speakPDF()" class="bg-white/10 px-3 py-2 rounded-full text-xs">🔊 Listen</button><button onclick="explainPDF('quiz')" class="bg-white/10 px-3 py-2 rounded-full text-xs">Make Quiz From This</button></div></div>
+  </div>
+</section>
+
+<!-- REVIEW -->
+<section id="tab-review" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto"><h3 class="font-bold text-lg">🔁 Spaced Review - Do Not Forget</h3><p class="text-sm text-zinc-400">These are topics you got wrong before. Review them today, your brain will remember them longer.</p><div class="flex gap-2 mt-3"><button onclick="startReviewQuiz()" class="grad px-4 py-2 rounded-full text-sm font-bold">Start Review Quiz</button><button onclick="clearReview()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Clear All</button></div><div id="reviewBox" class="mt-4 space-y-3"></div></div>
+</section>
+
+<!-- CHAT -->
+<section id="tab-chat" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto flex flex-col h-[560px]"><h3 class="font-bold">💬 Ask Priya Anything</h3><div id="chatBox" class="flex-1 overflow-y-auto space-y-2 mt-3 pr-1"></div><div class="flex gap-2 mt-3"><button onclick="toggleMic()" id="micBtn" class="bg-white/10 w-11 h-11 rounded-full shrink-0">🎤</button><input id="chatInput" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Ask a doubt, e.g. Explain fractions simply" class="flex-1 bg-black/40 rounded-full px-4 py-2 text-sm outline-none border border-white/10"><button onclick="sendChat()" class="grad w-11 h-11 rounded-full shrink-0">➤</button></div><p id="listeningText" class="text-xs text-pink-300 h-4 mt-1"></p></div>
+</section>
+
+<!-- DIAGNOSTIC MODAL -->
+<div id="diagModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur flex items-center justify-center p-4"><div class="card rounded-3xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"><div class="flex justify-between"><h3 class="font-black text-lg">🎯 Free Diagnostic - 2 Minutes</h3><button onclick="closeDiagnostic()" class="bg-white/10 w-8 h-8 rounded-full">✕</button></div><p class="text-xs text-zinc-400 mt-1">Answer 6 questions. Priya will set your starting level for every topic.</p><div id="diagBox" class="mt-4"></div><div id="diagResult" class="hidden mt-4"></div></div></div>
+
+</main>
+
+<script src="shared.js"></script>
+<script>
+/* DATA */
+const TOPICS={fractions:{name:"Fractions",icon:"🍕",desc:"Parts of a whole, add, subtract, multiply"},algebra:{name:"Algebra",icon:"🔢",desc:"Variables, equations, expressions"},geometry:{name:"Geometry",icon:"📐",desc:"Angles, triangles, circles, area"},science:{name:"Science",icon:"🔬",desc:"Photosynthesis, force, light, electricity"},english:{name:"English",icon:"📖",desc:"Tenses, active passive, comprehension"}};
+const LESSONS={
+  fractions:{1:{title:"Fractions - Basics",content:`<p><b>What is a Fraction?</b> A fraction is a part of a whole. Example: If you cut a pizza into 4 equal parts and eat 1, you ate <b>1/4</b>.</p><p><b>Top number = Numerator</b> (how many parts you have). <b>Bottom number = Denominator</b> (how many total parts).</p><p><b>Rule:</b> If denominator is same, compare numerators. 3/5 is bigger than 2/5.</p><p><b>Quick Trick:</b> To compare 2/3 vs 3/4, cross multiply: 2x4=8, 3x3=9. So 3/4 is bigger.</p>`},2:{title:"Fractions - Add and Subtract",content:`<p>Same denominator? Just add the top numbers. 2/7 + 3/7 = 5/7.</p><p>Different denominator? First make them same. Example: 1/2 + 1/3. LCM is 6. So 3/6 + 2/6 = 5/6.</p><p><b>Common Mistake:</b> Never add denominators directly. 1/2 + 1/2 is NOT 2/4. It is 1.</p>`},3:{title:"Fractions - Multiply and Divide",content:`<p>Multiply: Top x Top, Bottom x Bottom. 2/3 x 3/4 = 6/12 = 1/2.</p><p>Divide: Flip the second fraction and multiply. 2/3 ÷ 4/5 = 2/3 x 5/4 = 10/12 = 5/6.</p><p><b>Exam Tip:</b> Always simplify at the end.</p>`},4:{title:"Fractions - Word Problems",content:`<p>Priya had 3/4 of a cake. She gave 1/2 of it to her friend. How much is left? 3/4 - 1/2 = 3/4 - 2/4 = 1/4.</p><p><b>Method:</b> 1. Read what is asked. 2. Find LCM. 3. Solve. 4. Check if answer makes sense.</p>`}},
+  algebra:{1:{title:"Algebra - Variables",content:`<p>Algebra is math with letters. <b>x</b> means a number we do not know yet.</p><p>Example: x + 5 = 12. What is x? Move 5 to other side: x = 12 - 5 = 7.</p><p><b>Golden Rule:</b> What you do on one side, do on the other side.</p>`},2:{title:"Algebra - Equations",content:`<p>2x + 3 = 11. Step 1: 2x = 11 - 3 = 8. Step 2: x = 8 / 2 = 4.</p><p>Always check: Put x=4 back: 2x4+3=11. Correct.</p>`},3:{title:"Algebra - Expressions",content:`<p>Simplify: 3x + 2x = 5x. 4a - a = 3a.</p><p>Expand: 2(x+3) = 2x + 6. Multiply inside bracket.</p><p>Factor: 6x + 9 = 3(2x+3).</p>`},4:{title:"Algebra - Word Problems",content:`<p>A number is 5 more than twice another number. If sum is 20, find numbers. Let small = x, big = 2x+5. x + 2x+5 = 20 => 3x=15 => x=5, big=15.</p>`}},
+  geometry:{1:{title:"Geometry - Angles",content:`<p>Straight line = 180°. Full circle = 360°. Right angle = 90°.</p><p>Triangle angles always add to 180°. If two angles are 60° and 70°, third is 50°.</p>`},2:{title:"Geometry - Triangle",content:`<p>Area = 1/2 x base x height. Perimeter = sum of all sides.</p><p>Pythagoras: In right triangle, a² + b² = c². Example: 3-4-5 triangle.</p>`},3:{title:"Geometry - Circle",content:`<p>Area = πr². Circumference = 2πr. Diameter = 2 x radius.</p><p>If r=7, Area = 22/7 x 7 x 7 = 154.</p>`},4:{title:"Geometry - 3D Shapes",content:`<p>Cube volume = side³. Cuboid = l x b x h. Cylinder = πr²h.</p><p><b>Exam Trick:</b> Always write units. Volume in cm³, Area in cm².</p>`}},
+  science:{1:{title:"Science - Photosynthesis",content:`<p>Plants make their own food using sunlight, water and CO2. Equation: 6CO2 + 6H2O + sunlight → C6H12O6 + 6O2.</p><p>It happens in leaves, in chloroplasts. Chlorophyll makes leaves green.</p>`},2:{title:"Science - Force and Motion",content:`<p>Force = mass x acceleration. F = ma.</p><p>Newton 1st Law: Object stays still unless force is applied. 2nd: F=ma. 3rd: Every action has equal opposite reaction.</p>`},3:{title:"Science - Light",content:`<p>Light travels in straight lines. Speed = 3 x 10⁸ m/s.</p><p>Reflection: Angle of incidence = Angle of reflection. Refraction: Light bends when it changes medium.</p>`},4:{title:"Science - Electricity",content:`<p>V = IR. Voltage = Current x Resistance.</p><p>Series: Same current. Parallel: Same voltage. Bulb glows brighter in parallel.</p>`}},
+  english:{1:{title:"English - Tenses",content:`<p>Present: I eat. Past: I ate. Future: I will eat.</p><p>Present Continuous: I am eating. Past Continuous: I was eating.</p><p><b>Tip:</b> Look at time words - yesterday = Past, tomorrow = Future.</p>`},2:{title:"English - Active Passive",content:`<p>Active: Priya writes a letter. Passive: A letter is written by Priya.</p><p>Rule: Object becomes subject + be + verb 3rd form.</p>`},3:{title:"English - Direct Indirect",content:`<p>Direct: He said, "I am happy." Indirect: He said that he was happy.</p><p>Present becomes Past in indirect speech.</p>`},4:{title:"English - Comprehension",content:`<p>Step 1: Read questions first. Step 2: Read passage fast. Step 3: Find answers in passage, do not guess from outside.</p><p>Always underline keywords.</p>`}},
+};
+const QUESTIONS={
+  fractions:[{q:"What is 1/2 + 1/2 ?",opts:["2/4","1","1/4","2"],ans:1,level:1,hint:"Same denominator, add only top numbers.",explain:"1/2 + 1/2 = 2/2 = 1."},{q:"Which is bigger: 2/3 or 3/4 ?",opts:["2/3","3/4","Equal","Cannot say"],ans:1,level:2,hint:"Cross multiply: 2x4=8, 3x3=9.",explain:"3/4 is bigger because 9 > 8."},{q:"What is 2/3 x 3/4 ?",opts:["5/7","1/2","6/7","1"],ans:1,level:2,hint:"Top x Top, Bottom x Bottom.",explain:"6/12 = 1/2."},{q:"What is 3/4 - 1/2 ?",opts:["1/4","2/2","1/2","2/4"],ans:0,level:3,hint:"Make denominator same: 1/2 = 2/4.",explain:"3/4 - 2/4 = 1/4."},{q:"Priya ate 2/5 of pizza, Rahul ate 1/5. How much left?",opts:["2/5","3/5","1/5","4/5"],ans:0,level:3,hint:"Total eaten = 3/5. Left = 1 - 3/5.",explain:"1 - 3/5 = 2/5 left."},{q:"What is 5/6 ÷ 5/3 ?",opts:["1/2","25/18","5/2","1"],ans:0,level:4,hint:"Flip second fraction.",explain:"5/6 x 3/5 = 15/30 = 1/2."}],
+  algebra:[{q:"If x + 5 = 12, x = ?",opts:["5","7","17","6"],ans:1,level:1,hint:"Move 5 to other side.",explain:"x = 12 - 5 = 7."},{q:"If 2x = 14, x = ?",opts:["7","28","12","6"],ans:0,level:1,hint:"Divide both sides by 2.",explain:"x = 7."},{q:"Solve: 3x + 2 = 14",opts:["3","4","5","6"],ans:1,level:2,hint:"3x = 12.",explain:"x = 4."},{q:"Simplify: 4x + 3x - 2x",opts:["5x","9x","3x","2x"],ans:0,level:2,hint:"Add coefficients.",explain:"4+3-2 = 5x."},{q:"If x=3, value of 2x² + 1 ?",opts:["13","19","10","18"],ans:1,level:3,hint:"x² = 9.",explain:"2x9+1=19."},{q:"Expand: 3(x+4)",opts:["3x+4","3x+12","x+12","3x+7"],ans:1,level:3,hint:"Multiply inside.",explain:"3x+12."}],
+  geometry:[{q:"Sum of angles in a triangle?",opts:["90°","180°","360°","270°"],ans:1,level:1,hint:"Half of full circle.",explain:"Always 180°."},{q:"Area of rectangle 5 x 4?",opts:["9","20","18","16"],ans:1,level:1,hint:"Length x Breadth.",explain:"5x4=20."},{q:"In right triangle, sides 3,4, hypotenuse?",opts:["5","6","7","4"],ans:0,level:2,hint:"Pythagoras: 3²+4²=25.",explain:"√25 = 5."},{q:"Area of circle radius 7? (π=22/7)",opts:["154","44","22","308"],ans:0,level:3,hint:"πr².",explain:"22/7 x 49 = 154."},{q:"Volume of cube side 3?",opts:["9","27","18","12"],ans:1,level:3,hint:"side³.",explain:"27."},{q:"Circumference of circle r=7?",opts:["44","154","22","88"],ans:0,level:4,hint:"2πr.",explain:"2 x 22/7 x 7 = 44."}],
+  science:[{q:"Photosynthesis happens in?",opts:["Root","Leaf","Stem","Flower"],ans:1,level:1,hint:"Green part.",explain:"In leaves, chloroplasts."},{q:"Chemical symbol for water?",opts:["CO2","O2","H2O","NaCl"],ans:2,level:1,hint:"H + O.",explain:"H2O."},{q:"Force = ?",opts:["m/a","m x a","m+a","m-a"],ans:1,level:2,hint:"Newton 2nd law.",explain:"F = ma."},{q:"Speed of light?",opts:["3x10⁶","3x10⁸","3x10⁵","3x10⁷"],ans:1,level:3,hint:"Very fast.",explain:"3 x 10⁸ m/s."},{q:"V = IR is?",opts:["Newton Law","Ohm Law","Faraday Law","Boyle Law"],ans:1,level:3,hint:"Electricity.",explain:"Ohm's Law."},{q:"Plants release which gas in photosynthesis?",opts:["CO2","Oxygen","Nitrogen","Hydrogen"],ans:1,level:2,hint:"We breathe it.",explain:"Oxygen."}],
+  english:[{q:"Past tense of 'eat'?",opts:["Eated","Ate","Eaten","Eating"],ans:1,level:1,hint:"Irregular verb.",explain:"Eat - Ate - Eaten."},{q:"He ___ playing now.",opts:["is","are","was","were"],ans:0,level:1,hint:"Singular + now.",explain:"He is playing."},{q:"Passive: Priya writes a letter.",opts:["A letter is written by Priya","A letter writes Priya","Priya is written","Letter is writing"],ans:0,level:2,hint:"Object becomes subject.",explain:"A letter is written by Priya."},{q:"Indirect: He said, 'I am happy.'",opts:["He said he is happy","He said he was happy","He says he was happy","He said he had happy"],ans:1,level:3,hint:"Present becomes Past.",explain:"He said that he was happy."},{q:"Synonym of 'Happy'?",opts:["Sad","Joyful","Angry","Tired"],ans:1,level:2,hint:"Same meaning.",explain:"Joyful."},{q:"Choose correct: She ___ to school daily.",opts:["go","goes","going","gone"],ans:1,level:3,hint:"She + s.",explain:"She goes."}],
+};
+
+/* STATE */
+let model=JSON.parse(localStorage.getItem('priya_model')||'{}');
+let userName=localStorage.getItem('priya_user')||'';
+let xp=parseInt(localStorage.getItem('priya_xp')||'0');
+let streak=parseInt(localStorage.getItem('priya_streak')||'0');
+let lastDay=localStorage.getItem('priya_last_day')||'';
+let mistakes=JSON.parse(localStorage.getItem('priya_mistakes')||'[]');
+let history=JSON.parse(localStorage.getItem('priya_history')||'[]');
+let lastMock=localStorage.getItem('priya_last_mock')||'';
+let pdfText="", pdfName="";
+let currentTopic='fractions';
+let lastMsg="";
+
+function getModel(t){ if(!model[t]) model[t]={mastery:0,level:1,correct:0,wrong:0,attempts:0,weakAreas:[],lastStudied:0}; return model[t]; }
+function saveModel(){ localStorage.setItem('priya_model',JSON.stringify(model)); localStorage.setItem('priya_xp',xp); localStorage.setItem('priya_mistakes',JSON.stringify(mistakes)); localStorage.setItem('priya_history',JSON.stringify(history)); renderHome(); renderDashboard(); }
+function updateStreak(){ let today=new Date().toDateString(); if(lastDay!==today){ let diff=lastDay?Math.round((new Date(today)-new Date(lastDay))/86400000):99; if(diff===1) streak++; else streak=1; lastDay=today; localStorage.setItem('priya_last_day',today); localStorage.setItem('priya_streak',streak); } }
+function overallLevel(){ let vals=Object.values(model); if(!vals.length) return "Beginner"; let avg=vals.reduce((a,b)=>a+b.mastery,0)/vals.length; if(avg<25) return "Beginner"; if(avg<55) return "Intermediate"; if(avg<80) return "Advanced"; return "Master"; }
+function addXP(n){ xp+=n; localStorage.setItem('priya_xp',xp); }
+function avgMastery(){ let v=Object.values(model); return v.length?Math.round(v.reduce((a,b)=>a+b.mastery,0)/v.length):0; }
+function totalStats(){ let c=Object.values(model).reduce((a,b)=>a+b.correct,0); let w=Object.values(model).reduce((a,b)=>a+b.wrong,0); let t=c+w; return {c,w,t,acc:t?Math.round(c/t*100):0}; }
+
+/* NAV */
+function goHome(){ document.getElementById('page-home').classList.remove('hidden'); document.getElementById('page-app').classList.add('hidden'); document.getElementById('topBar').classList.add('hidden'); window.scrollTo(0,0); renderHome(); }
+function enterApp(tab){ document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-app').classList.remove('hidden'); document.getElementById('topBar').classList.remove('hidden'); showTab(tab||'dashboard', document.querySelector(`[data-tab="${tab||'dashboard'}"]`)); window.scrollTo(0,0); }
+function showTab(id,btn){
+  document.querySelectorAll('#page-app > section').forEach(s=>s.classList.add('hidden'));
+  let el=document.getElementById('tab-'+id); if(el) el.classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active');
+  if(id==='learn') renderLearn();
+  if(id==='practice') renderPracticeTopicTabs();
+  if(id==='dashboard') renderDashboard();
+  if(id==='review') renderReview();
+}
+function openProfile(){ let n=prompt("Your name?", userName||""); if(n){ userName=n; localStorage.setItem('priya_user',n); renderHome(); renderDashboard(); priyaSay(`Great, ${n}! I will remember your progress now.`); } }
+function resetAll(){ if(confirm("Reset all progress?")){ localStorage.clear(); location.reload(); } }
+
+/* HOME */
+function renderHome(){
+  updateStreak();
+  let s=totalStats();
+  ['streakVal','xpVal','levelVal'].forEach(id=>{ let el=document.getElementById(id); if(el) el.textContent = id==='streakVal'?streak : id==='xpVal'?xp : overallLevel(); });
+  if(userName){ let a=document.getElementById('homeNameLabel'); if(a) a.textContent=userName; let b=document.getElementById('userNameLabel'); if(b) b.textContent=userName; let c=document.getElementById('helloName'); if(c) c.textContent=userName; }
+  let ha=document.getElementById('homeAccuracy'); if(ha) ha.textContent=s.acc+"%";
+  let hq=document.getElementById('homeQuestions'); if(hq) hq.textContent=s.t;
+  let hm=document.getElementById('homeMastery'); if(hm) hm.textContent=avgMastery()+"%";
+  let hl=document.getElementById('homeLevel'); if(hl) hl.textContent=overallLevel()+" • Level "+Math.max(1,Math.round(avgMastery()/25)+1);
+  let hb=document.getElementById('homeLevelBar'); if(hb) hb.style.width=Math.max(5,avgMastery())+"%";
+  let hp=document.getElementById('homeLevelPct'); if(hp) hp.textContent=avgMastery()+"% to Master";
+  let sorted=Object.keys(TOPICS).map(t=>({t,m:getModel(t)})).sort((a,b)=>a.m.mastery-b.m.mastery);
+  let wk=document.getElementById('homeWeakest'); if(wk) wk.textContent = s.t===0?"Start Now":TOPICS[sorted[0].t].name+" "+sorted[0].m.mastery+"%";
+  let nl=document.getElementById('homeNextLesson'); if(nl) nl.textContent = TOPICS[sorted[0].t].name+" L"+getModel(sorted[0].t).level;
+  let hg=document.getElementById('homeGoal'); if(hg) hg.textContent = s.t>=10?"Goal Reached":(10-s.t)+" Left";
+  let subj=document.getElementById('homeSubjects'); if(subj){ subj.innerHTML=Object.keys(TOPICS).map(t=>{ let m=getModel(t); return `<div class="card rounded-3xl p-4"><p class="text-3xl">${TOPICS[t].icon}</p><h3 class="font-bold mt-2">${TOPICS[t].name}</h3><p class="text-xs text-zinc-400">${TOPICS[t].desc}</p><p class="font-black mt-2">${m.mastery}% <span class="text-xs font-normal text-zinc-400">• Level ${m.level}</span></p><div class="mastery-bar mt-2"><div class="mastery-fill" style="width:${m.mastery}%"></div></div><button onclick="selectTopic('${t}'); enterApp('learn')" class="w-full bg-white/10 py-2 rounded-full text-xs mt-3">Start →</button></div>`; }).join(''); }
+  let prev=document.getElementById('homeModelPreview'); if(prev){ prev.innerHTML=Object.keys(TOPICS).map(t=>{ let m=getModel(t); return `<div><p class="text-xs flex justify-between"><span>${TOPICS[t].icon} ${TOPICS[t].name}</span><span>${m.mastery}% • L${m.level}</span></p><div class="mastery-bar mt-1"><div class="mastery-fill" style="width:${m.mastery}%"></div></div></div>`; }).join(''); }
+  let demo=document.getElementById('homeDemoOpts'); if(demo && !demo.dataset.done){ demo.innerHTML=["2/4","1","1/4","2"].map((o,i)=>`<button onclick="homeDemo(${i},this)" class="opt bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-sm text-left">${o}</button>`).join(''); }
+}
+function homeDemo(i,el){
+  let correct=i===1; document.querySelectorAll('#homeDemoOpts .opt').forEach(b=>b.disabled=true);
+  if(correct){ el.classList.add('correct'); document.getElementById('homeDemoFeedback').innerHTML=`<span class="text-green-400 font-bold">✓ Correct! Next question will be harder - Level 2.</span>`; let m=getModel('fractions'); m.correct++; m.attempts++; m.mastery=Math.min(100,m.mastery+6); addXP(10); }
+  else{ el.classList.add('wrong'); document.getElementById('homeDemoFeedback').innerHTML=`<span class="text-red-400 font-bold">✗ Correct answer is 1. 1/2 + 1/2 = 1. Next question will be easier + hint.</span>`; let m=getModel('fractions'); m.wrong++; m.attempts++; m.mastery=Math.max(0,m.mastery-3); mistakes.push({q:"What is 1/2 + 1/2 ?",correct:"1",explain:"1/2 + 1/2 = 2/2 = 1.",topic:"fractions"}); }
+  saveModel(); document.getElementById('homeDemoOpts').dataset.done="1";
+  setTimeout(()=>{ document.getElementById('homeDemoOpts').dataset.done=""; document.getElementById('homeDemoFeedback').textContent=""; renderHome(); },2500);
+}
+
+/* DASHBOARD */
+function renderDashboard(){
+  updateStreak();
+  document.getElementById('streakVal').textContent=streak; document.getElementById('xpVal').textContent=xp; document.getElementById('levelVal').textContent=overallLevel();
+  if(userName){ document.getElementById('userNameLabel').textContent=userName; document.getElementById('helloName').textContent=userName; }
+  let s=totalStats(); document.getElementById('statAccuracy').textContent=s.acc+"%"; document.getElementById('statAnswered').textContent=s.t; document.getElementById('statMastery').textContent=avgMastery()+"%";
+  document.getElementById('goalBar').style.width=Math.min(100,s.t*10)+"%";
+  document.getElementById('nextGoalText').textContent=s.t>=10?"Goal reached! Next: 20 questions":`Complete ${10-s.t} more questions`;
+  let lm=document.getElementById('lastMockText'); if(lm) lm.textContent=lastMock||"No test yet";
+  let grid=document.getElementById('masteryGrid'); grid.innerHTML="";
+  Object.keys(TOPICS).forEach(t=>{ let m=getModel(t); grid.innerHTML+=`<div class="card rounded-2xl p-4"><div class="flex justify-between"><p class="font-bold">${TOPICS[t].icon} ${TOPICS[t].name}</p><span class="text-xs bg-white/10 px-2 py-1 rounded-full">Level ${m.level}</span></div><p class="text-2xl font-black mt-2">${m.mastery}% <span class="text-xs font-normal text-zinc-400">mastery</span></p><div class="mastery-bar mt-2"><div class="mastery-fill" style="width:${m.mastery}%"></div></div><p class="text-[11px] text-zinc-400 mt-2">✓ ${m.correct} correct • ✗ ${m.wrong} wrong • ${m.attempts} attempts</p><button onclick="selectTopic('${t}'); showTab('learn',document.querySelector('[data-tab=learn]'))" class="mt-3 w-full bg-white/10 py-1.5 rounded-full text-xs">Continue Learning →</button></div>`; });
+  let sorted=Object.keys(TOPICS).map(t=>({t,m:getModel(t)})).sort((a,b)=>a.m.mastery-b.m.mastery);
+  let rec=document.getElementById('recommendBox'); rec.innerHTML="";
+  sorted.slice(0,3).forEach(({t,m})=>{ rec.innerHTML+=`<div class="flex justify-between items-center bg-black/30 rounded-xl px-3 py-2"><div><p class="font-bold text-sm">${TOPICS[t].icon} ${TOPICS[t].name} - Level ${m.level}</p><p class="text-[11px] text-zinc-400">Mastery ${m.mastery}% - ${m.mastery<40?'Needs focus':'Almost there'}</p></div><button onclick="selectTopic('${t}'); startPracticeTopic('${t}'); showTab('practice',document.querySelector('[data-tab=practice]'))" class="grad px-3 py-1 rounded-full text-xs">Practice</button></div>`; });
+  let mis=document.getElementById('mistakeBox');
+  if(!mistakes.length) mis.innerHTML=`<p>No mistakes yet. Start practicing and I will track them for you.</p>`;
+  else mis.innerHTML=mistakes.slice(-5).reverse().map(m=>`<div class="bg-black/30 rounded-xl px-3 py-2"><p>❌ ${m.q}</p><p class="text-xs text-green-400">✓ Correct: ${m.correct} • ${m.explain}</p></div>`).join('');
+  let ctx=document.getElementById('progressChart'); if(ctx){ if(window.myChart) window.myChart.destroy(); window.myChart=new Chart(ctx,{type:'line',data:{labels:history.slice(-7).map((_,i)=>'Attempt '+(i+1)),datasets:[{label:'Accuracy %',data:history.slice(-7).map(h=>h.acc),borderColor:'#ff2d55',backgroundColor:'rgba(255,45,85,.2)',fill:true,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'white'}}},scales:{y:{min:0,max:100,ticks:{color:'#aaa'},grid:{color:'rgba(255,255,255,.08)'}},x:{ticks:{color:'#aaa'},grid:{color:'rgba(255,255,255,.08)'}}}}}); }
+}
+
+/* LEARN */
+function selectTopic(t){ currentTopic=t; renderLearn(); }
+function renderLearn(){
+  let tabs=document.getElementById('topicTabs'); tabs.innerHTML="";
+  Object.keys(TOPICS).forEach(t=>{ tabs.innerHTML+=`<button onclick="selectTopic('${t}')" class="topic-btn ${t===currentTopic?'active':''} bg-white/10 px-4 py-2 rounded-full text-sm">${TOPICS[t].icon} ${TOPICS[t].name} - Lvl ${getModel(t).level}</button>`; });
+  let m=getModel(currentTopic); let lesson=LESSONS[currentTopic][m.level]||LESSONS[currentTopic][1];
+  document.getElementById('learnTitle').textContent=lesson.title;
+  document.getElementById('learnLevel').textContent=`Level ${m.level} • ${m.level===1?'Easy':m.level===2?'Medium':m.level===3?'Hard':'Expert'}`;
+  document.getElementById('learnMastery').textContent=`Mastery ${m.mastery}%`;
+  document.getElementById('learnBadge').textContent=m.level===1?'EASY':m.level===2?'MEDIUM':m.level===3?'HARD':'EXPERT';
+  document.getElementById('learnContent').innerHTML=lesson.content;
+}
+function addLearnChat(msg,who){ let box=document.getElementById('learnChat'); box.innerHTML+=`<div class="${who==='user'?'text-right':''}"><span class="inline-block ${who==='user'?'bg-pink-600':'bg-white/10'} px-3 py-2 rounded-2xl text-sm max-w-[90%]">${msg}</span></div>`; box.scrollTop=box.scrollHeight; }
+function explainSimpler(){ let m=getModel(currentTopic); let lesson=LESSONS[currentTopic][m.level]; let msg=`Let me make it super simple. Think of ${currentTopic} like a real life story. ${lesson.content.replace(/<[^>]*>/g,' ').slice(0,350)} ... In short: just remember one rule at a time. Got it?`; addLearnChat(msg,'priya'); priyaSay(msg); }
+function explainWithExample(){ addLearnChat(`Example time! Take a real example: If you have 10 chocolates and you give 3 to your friend, you gave 3/10. That is ${currentTopic} in real life. Try one yourself: If you have 20 rupees and spend 5, what fraction did you spend?`,'priya'); priyaSay("Example time. Try this one yourself, I will check your answer."); }
+function explainWithStory(){ addLearnChat(`Once there was a student who was scared of ${currentTopic}. One day Priya told a story, the student practiced 3 questions, and the next day that student topped the test. You are that student. Let us practice 3 questions now.`,'priya'); priyaSay("Story time. You are the hero of this story."); }
+function markUnderstood(){ let m=getModel(currentTopic); m.mastery=Math.min(100,m.mastery+12); if(m.mastery>70 && m.level<4) m.level++; saveModel(); renderLearn(); priyaSay(`Awesome! ${currentTopic} mastery is now ${m.mastery}%. Let us go to next level.`); }
+function markConfused(){ let m=getModel(currentTopic); m.level=Math.max(1,m.level-1); saveModel(); renderLearn(); priyaSay("No problem. I lowered the level. Let us learn it slowly, step by step."); }
+function prevLesson(){ let m=getModel(currentTopic); m.level=Math.max(1,m.level-1); saveModel(); renderLearn(); }
+function nextLesson(){ let m=getModel(currentTopic); m.level=Math.min(4,m.level+1); saveModel(); renderLearn(); }
+function askLearn(){ let inp=document.getElementById('learnInput'); let v=inp.value.trim(); if(!v) return; addLearnChat(v,'user'); inp.value=""; setTimeout(()=>{ let r=`Good question about ${currentTopic}. ${LESSONS[currentTopic][getModel(currentTopic).level].content.replace(/<[^>]*>/g,' ').slice(0,300)} ... Does that clear your doubt? Ask me to explain simpler if needed.`; addLearnChat(r,'priya'); priyaSay(r); },600); }
+
+/* PRACTICE */
+let practiceTopic='fractions', practiceIdx=0, sessionStreak=0, practiceQueue=[];
+function renderPracticeTopicTabs(){ let box=document.getElementById('practiceTopicTabs'); box.innerHTML=""; Object.keys(TOPICS).forEach(t=>{ box.innerHTML+=`<button onclick="startPracticeTopic('${t}')" class="topic-btn ${t===practiceTopic?'active':''} bg-white/10 px-3 py-1.5 rounded-full text-xs">${TOPICS[t].icon} ${TOPICS[t].name}</button>`; }); if(!practiceQueue.length) startPracticeTopic(practiceTopic); }
+function startPracticeTopic(t){ practiceTopic=t; currentTopic=t; practiceQueue=[...QUESTIONS[t]].sort(()=>Math.random()-.5); practiceIdx=0; sessionStreak=0; document.getElementById('sessionStreak').textContent=0; renderPractice(); renderPracticeTopicTabs(); }
+function startAdaptive(){ let weakest=Object.keys(TOPICS).map(t=>({t,m:getModel(t)})).sort((a,b)=>a.m.mastery-b.m.mastery)[0].t; startPracticeTopic(weakest); showTab('practice',document.querySelector('[data-tab=practice]')); priyaSay(`I found your weakest topic is ${TOPICS[weakest].name}. Let us fix it together.`); }
+function renderPractice(){
+  let m=getModel(practiceTopic);
+  document.getElementById('practiceLevelLabel').textContent=`Level ${m.level} - ${m.level===1?'Easy':m.level===2?'Medium':m.level===3?'Hard':'Expert'}`;
+  document.getElementById('practiceProgress').style.width=(practiceIdx%6/6*100)+"%";
+  let filtered=QUESTIONS[practiceTopic].filter(x=>Math.abs(x.level-m.level)<=1); let q=filtered.length?filtered[Math.floor(Math.random()*filtered.length)]:QUESTIONS[practiceTopic][0];
+  window.currentQ=q;
+  let box=document.getElementById('practiceBox');
+  box.innerHTML=`<p class="text-[11px] text-zinc-400">Question ${practiceIdx+1} • ${TOPICS[practiceTopic].name} • Difficulty ${q.level}</p><h3 class="text-lg font-bold mt-2">${q.q}</h3><div class="grid gap-2 mt-3">${q.opts.map((o,i)=>`<button onclick="answerPractice(${i},this)" class="opt text-left bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`;
+  document.getElementById('practiceFeedback').innerHTML="";
+}
+function answerPractice(i,el){
+  let q=window.currentQ; let m=getModel(practiceTopic); let correct=i===q.ans;
+  document.querySelectorAll('#practiceBox .opt').forEach((b,idx)=>{ b.disabled=true; if(idx===q.ans) b.classList.add('correct'); if(idx===i && !correct) b.classList.add('wrong'); });
+  m.attempts++; if(correct){ m.correct++; sessionStreak++; addXP(10); m.mastery=Math.min(100,m.mastery+6); if(sessionStreak>=2 && m.level<4){ m.level++; sessionStreak=0; } } else { m.wrong++; sessionStreak=0; addXP(2); m.mastery=Math.max(0,m.mastery-3); mistakes.push({q:q.q,correct:q.opts[q.ans],explain:q.explain,topic:practiceTopic}); }
+  document.getElementById('sessionStreak').textContent=sessionStreak;
+  document.getElementById('practiceFeedback').innerHTML=correct?`<p class="text-green-400 font-bold">✓ Correct! +10 XP. ${q.explain}</p>`:`<p class="text-red-400 font-bold">✗ Not correct. Correct answer: ${q.opts[q.ans]}</p><p class="text-zinc-300">${q.explain}</p><p class="text-yellow-300 text-xs">I noted this mistake. I will show it again in Review.</p>`;
+  history.push({acc:Math.round(m.correct/(m.correct+m.wrong)*100),topic:practiceTopic});
+  saveModel(); priyaSay(correct?`Correct! ${q.explain}`:`Not quite. Correct answer is ${q.opts[q.ans]}. ${q.explain}`);
+}
+function showHint(){ if(window.currentQ) document.getElementById('practiceFeedback').innerHTML=`<p class="text-yellow-300">💡 Hint: ${window.currentQ.hint}</p>`; }
+function nextPractice(){ practiceIdx++; renderPractice(); }
+function skipPractice(){ practiceIdx++; renderPractice(); }
+
+/* MOCK */
+let mockQs=[], mockIdx=0, mockScore=0, mockTimerInt=null, mockTimeLeft=600;
+function startMock(){
+  let topic=document.getElementById('mockTopic').value; let all=[]; Object.keys(QUESTIONS).forEach(t=>{ if(topic==='all'||topic===t) QUESTIONS[t].forEach(q=>all.push({...q,topic:t})); });
+  mockQs=all.sort(()=>Math.random()-.5).slice(0,10); mockIdx=0; mockScore=0; mockTimeLeft=parseInt(document.getElementById('mockTime').value);
+  document.getElementById('mockSetup').classList.add('hidden'); document.getElementById('mockBox').classList.remove('hidden'); document.getElementById('mockResult').classList.add('hidden');
+  clearInterval(mockTimerInt); mockTimerInt=setInterval(()=>{ mockTimeLeft--; let mm=Math.floor(mockTimeLeft/60), ss=mockTimeLeft%60; document.getElementById('mockTimer').textContent=`${mm}:${ss<10?'0':''}${ss}`; if(mockTimeLeft<=0) finishMock(); },1000);
+  renderMock();
+}
+function renderMock(){ let q=mockQs[mockIdx]; document.getElementById('mockQNo').textContent=mockIdx+1; document.getElementById('mockBar').style.width=((mockIdx+1)/10*100)+"%"; document.getElementById('mockQ').innerHTML=`<p class="text-xs text-zinc-400">${TOPICS[q.topic].name} • Level ${q.level}</p><h3 class="text-lg font-bold mt-2">${q.q}</h3><div class="grid gap-2 mt-3">${q.opts.map((o,i)=>`<button onclick="selectMock(${i},this)" class="opt text-left bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`; }
+function selectMock(i,el){ document.querySelectorAll('#mockQ .opt').forEach(b=>b.classList.remove('selected')); el.classList.add('selected'); el.dataset.sel=i; }
+function nextMock(){ let sel=document.querySelector('#mockQ .opt.selected'); if(!sel){ alert("Select an answer first"); return; } let q=mockQs[mockIdx]; let isRight=parseInt(sel.dataset.sel)===q.ans; if(isRight) mockScore++; else mistakes.push({q:q.q,correct:q.opts[q.ans],explain:q.explain,topic:q.topic}); let m=getModel(q.topic); m.attempts++; if(isRight){ m.correct++; m.mastery=Math.min(100,m.mastery+4); } else { m.wrong++; m.mastery=Math.max(0,m.mastery-2); } saveModel(); mockIdx++; if(mockIdx>=mockQs.length) finishMock(); else renderMock(); }
+function finishMock(){ clearInterval(mockTimerInt); document.getElementById('mockBox').classList.add('hidden'); let res=document.getElementById('mockResult'); res.classList.remove('hidden'); let pct=Math.round(mockScore/10*100); addXP(mockScore*10); lastMock=`${mockScore}/10 (${pct}%) - ${new Date().toLocaleDateString()}`; localStorage.setItem('priya_last_mock',lastMock); res.innerHTML=`<div class="text-center"><p class="text-5xl font-black">${mockScore}/10</p><p class="text-zinc-400">${pct}% Score • +${mockScore*10} XP</p><p class="mt-2 font-bold">${pct>=80?'Outstanding! You are exam ready.':pct>=50?'Good progress. Practice weak topics.':'Keep going. Priya will help you improve.'}</p></div><div class="mt-4 text-sm space-y-1"><p class="font-bold">Your Learner Model Updated:</p>${Object.keys(TOPICS).map(t=>`<p>${TOPICS[t].name}: ${getModel(t).mastery}% mastery, Level ${getModel(t).level}</p>`).join('')}</div><button onclick="document.getElementById('mockSetup').classList.remove('hidden'); document.getElementById('mockResult').classList.add('hidden'); renderDashboard()" class="grad w-full py-2 rounded-full mt-4 font-bold">Take Another Test</button>`; saveModel(); priyaSay(`Mock test finished. You scored ${mockScore} out of 10. ${pct>=80?'Amazing work!':'Good effort, let us improve together.'}`); }
+
+/* PDF */
+async function readPDF(input){
+  let file=input.files[0]; if(!file) return; pdfName=file.name; document.getElementById('pdfStatus').textContent="Reading "+pdfName+"..."; priyaSay(`Got your PDF ${pdfName}. Reading it now.`);
+  try{ let buf=await file.arrayBuffer(); pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; let pdf=await pdfjsLib.getDocument({data:buf}).promise; pdfText=""; let max=Math.min(pdf.numPages,10); for(let i=1;i<=max;i++){ let page=await pdf.getPage(i); let c=await page.getTextContent(); pdfText+=c.items.map(x=>x.str).join(" ")+" "; } pdfText=pdfText.replace(/\s+/g," ").trim(); document.getElementById('pdfStatus').textContent=`Done! ${pdfName} - ${pdf.numPages} pages read.`; document.getElementById('pdfActions').classList.remove('hidden'); document.getElementById('pdfActions').classList.add('flex'); explainPDF('easy'); }catch(e){ document.getElementById('pdfStatus').textContent="Could not read PDF. Try again."; }
+}
+function usePastedText(){ let v=document.getElementById('pdfPaste').value.trim(); if(!v){ alert("Paste some text first"); return; } pdfText=v; pdfName="Pasted Text"; document.getElementById('pdfStatus').textContent="Pasted text loaded."; document.getElementById('pdfActions').classList.remove('hidden'); document.getElementById('pdfActions').classList.add('flex'); explainPDF('easy'); }
+function explainPDF(mode){
+  if(!pdfText){ priyaSay("Please upload a PDF first."); return; }
+  let sents=pdfText.split(/(?<=[.!?])\s+/).filter(s=>s.length>30 && s.length<220).slice(0,6);
+  let out=document.getElementById('pdfOutput');
+  if(mode==='easy') out.innerHTML=`<p class="font-bold">Easy Explanation of ${pdfName}</p><p>${sents.join(" ")||pdfText.slice(0,600)}</p><p class="text-pink-300">In short: This is the main idea. Ask me to explain simpler if needed.</p>`;
+  if(mode==='points') out.innerHTML=`<p class="font-bold">Key Points</p>${sents.slice(0,5).map((s,i)=>`<p>${i+1}. ${s}</p>`).join('')||`<p>${pdfText.slice(0,600)}</p>`}`;
+  if(mode==='quiz') out.innerHTML=`<p class="font-bold">Quiz From Your PDF</p><p>Q1. What is the main idea of this PDF?</p><p class="text-zinc-400 text-xs">Hint: ${sents.slice(0,2).join(" ").slice(0,200)}</p><p>Q2. Write 3 key points from this PDF in your notebook.</p><p>Q3. Explain this topic to a friend in 2 lines.</p>`;
+  if(mode==='plan') out.innerHTML=`<p class="font-bold">7 Day Study Plan</p><p>Day 1-2: Read and understand key points.</p><p>Day 3-4: Practice 10 questions daily.</p><p>Day 5: Mock test.</p><p>Day 6: Review mistakes.</p><p>Day 7: Final revision + rest.</p>`;
+  priyaSay(`I explained your PDF in ${mode} mode. Check the panel.`);
+}
+function speakPDF(){ let t=document.getElementById('pdfOutput').innerText; if(t) speakText(t.slice(0,600)); }
+
+/* REVIEW */
+function renderReview(){ let box=document.getElementById('reviewBox'); if(!mistakes.length) box.innerHTML=`<p class="text-zinc-400">No review items yet. Practice more and I will build your review list.</p>`; else box.innerHTML=mistakes.slice(-8).reverse().map((m,i)=>{ let realIdx=mistakes.length-1-i; return `<div class="card rounded-2xl p-4 flex justify-between gap-3"><div><p class="font-bold">${m.q}</p><p class="text-sm text-green-400 mt-1">Correct: ${m.correct}</p><p class="text-sm text-zinc-400">${m.explain}</p></div><button onclick="mistakes.splice(${realIdx},1); saveModel(); renderReview()" class="bg-green-600 px-3 py-1 rounded-full text-xs h-fit shrink-0">✓ Reviewed</button></div>`; }).join(''); }
+function clearReview(){ mistakes=[]; saveModel(); renderReview(); }
+function startReviewQuiz(){ if(!mistakes.length){ alert("No mistakes to review yet. Practice first."); return; } let m=mistakes[0]; enterApp('practice'); let topic=m.topic||'fractions'; startPracticeTopic(topic); priyaSay("Starting review quiz from your mistakes."); }
+
+/* DIAGNOSTIC */
+let diagQs=[], diagIdx=0, diagScoreByTopic={};
+function startFreeDiagnostic(){
+  let all=[]; Object.keys(QUESTIONS).forEach(t=>{ QUESTIONS[t].slice(0,2).forEach(q=>all.push({...q,topic:t})); });
+  diagQs=all.sort(()=>Math.random()-.5).slice(0,6); diagIdx=0; diagScoreByTopic={};
+  document.getElementById('diagModal').classList.remove('hidden'); document.getElementById('diagResult').classList.add('hidden'); renderDiag();
+}
+function closeDiagnostic(){ document.getElementById('diagModal').classList.add('hidden'); }
+function renderDiag(){ let q=diagQs[diagIdx]; document.getElementById('diagBox').innerHTML=`<p class="text-xs text-zinc-400">Question ${diagIdx+1} / ${diagQs.length} • ${TOPICS[q.topic].name}</p><h3 class="text-lg font-bold mt-2">${q.q}</h3><div class="grid gap-2 mt-3">${q.opts.map((o,i)=>`<button onclick="answerDiag(${i},this)" class="opt text-left bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>`; }
+function answerDiag(i,el){
+  let q=diagQs[diagIdx]; let correct=i===q.ans;
+  document.querySelectorAll('#diagBox .opt').forEach((b,idx)=>{ b.disabled=true; if(idx===q.ans) b.classList.add('correct'); if(idx===i && !correct) b.classList.add('wrong'); });
+  if(!diagScoreByTopic[q.topic]) diagScoreByTopic[q.topic]={c:0,t:0}; diagScoreByTopic[q.topic].t++; if(correct) diagScoreByTopic[q.topic].c++;
+  let m=getModel(q.topic); m.attempts++; if(correct){ m.correct++; m.mastery=Math.min(100,m.mastery+8); } else { m.wrong++; m.mastery=Math.max(0,m.mastery-2); mistakes.push({q:q.q,correct:q.opts[q.ans],explain:q.explain,topic:q.topic}); }
+  saveModel();
+  setTimeout(()=>{ diagIdx++; if(diagIdx>=diagQs.length) finishDiag(); else renderDiag(); },800);
+}
+function finishDiag(){
+  document.getElementById('diagBox').innerHTML=""; let res=document.getElementById('diagResult'); res.classList.remove('hidden');
+  let html=`<div class="text-center"><p class="text-2xl font-black">Diagnostic Complete!</p><p class="text-sm text-zinc-400">Your starting levels are set.</p></div><div class="mt-4 space-y-2">${Object.keys(TOPICS).map(t=>{ let sc=diagScoreByTopic[t]; let lvl=sc && sc.c>=1?2:1; let mm=getModel(t); mm.level=lvl; if(sc && sc.c===0) mm.mastery=Math.max(0,mm.mastery); saveModel(); return `<div class="bg-black/30 rounded-xl px-3 py-2 flex justify-between text-sm"><span>${TOPICS[t].icon} ${TOPICS[t].name}</span><span>Level ${lvl} • ${mm.mastery}%</span></div>`; }).join('')}</div>`;
+  res.innerHTML=html+`<button onclick="closeDiagnostic(); enterApp('dashboard')" class="grad w-full py-3 rounded-full font-bold mt-4">See My Dashboard →</button><button onclick="closeDiagnostic(); enterApp('learn')" class="bg-white/10 w-full py-2 rounded-full text-sm mt-2">Start Learning</button>`;
+  priyaSay("Diagnostic complete. I have set your levels. Check your dashboard.");
+}
+
+/* CHAT + VOICE */
+function addChat(msg,who){ let box=document.getElementById('chatBox'); if(!box) return; box.innerHTML+=`<div class="${who==='user'?'text-right':''}"><span class="inline-block ${who==='user'?'bg-pink-600':'bg-white/10'} px-3 py-2 rounded-2xl text-sm max-w-[85%]">${msg}</span></div>`; box.scrollTop=box.scrollHeight; }
+function getTutorReply(text){
+  let t=text.toLowerCase();
+  if(t.includes('hello')||t.includes('hi')) return `Hello ${userName||'learner'}! I am Priya, your adaptive tutor. Tell me which topic is hard for you.`;
+  if(t.includes('fraction')) return `Fractions are easy. Think of a pizza cut into 4 parts. 1 part = 1/4. 2 parts = 2/4 = 1/2. Want a quiz on fractions?`;
+  if(t.includes('algebra')) return `Algebra: x is a mystery number. If x + 5 = 12, then x = 7. Just move numbers to the other side and change the sign.`;
+  if(t.includes('geometry')||t.includes('triangle')) return `Triangle angles always add to 180 degrees. Circle area = pi r squared. Pythagoras: a squared + b squared = c squared.`;
+  if(t.includes('science')||t.includes('photosynthesis')) return `Photosynthesis: Plants use sunlight, water and CO2 to make food and release oxygen. It happens in leaves.`;
+  if(t.includes('english')||t.includes('tense')) return `Tenses: Present - I eat. Past - I ate. Future - I will eat. Look at time words like yesterday or tomorrow.`;
+  if(t.includes('motivat')||t.includes('tired')||t.includes('hard')) return `You are doing better than you think. Every topper was once confused. Just do 3 questions today, I will handle the rest.`;
+  if(t.includes('exam')||t.includes('test')) return `For exams: 1. Revise weak topics first. 2. Do a mock test. 3. Review mistakes. Go to Mock Test tab and try one now.`;
+  if(pdfText && (t.includes('pdf')||t.includes('book')||t.includes('explain'))) return `From your PDF: ${pdfText.slice(0,400)} ... Want key points? Click Key Points in PDF tab.`;
+  return `Good question! "${text}" - Let us break it into small parts. First, what is the main idea? Tell me the topic and I will explain it simply with an example.`;
+}
+function priyaSay(text){
+  lastMsg=text;
+  let a=document.getElementById('priyaSpeaking'); if(a) a.textContent=text.slice(0,120)+"...";
+  let b=document.getElementById('priyaSpeakingHome'); if(b) b.textContent=text.slice(0,180);
+  addChat(text,'priya');
+  ['priyaImg','priyaImgHome'].forEach(id=>{ let img=document.getElementById(id); if(img){ img.classList.add('talking'); setTimeout(()=>img.classList.remove('talking'),2500); } });
+  let w=document.getElementById('voiceWave'); if(w){ w.classList.remove('hidden'); setTimeout(()=>w.classList.add('hidden'),2500); }
+  speakText(text.replace(/<[^>]*>/g,' '));
+}
+function sendChat(){ let inp=document.getElementById('chatInput'); let v=inp.value.trim(); if(!v) return; addChat(v,'user'); inp.value=""; setTimeout(()=>priyaSay(getTutorReply(v)),500); }
+function speakText(text){ try{ speechSynthesis.cancel(); let u=new SpeechSynthesisUtterance(text); u.lang='en-IN'; u.rate=1; u.pitch=1.1; let vs=speechSynthesis.getVoices(); let hv=vs.find(v=>v.lang.includes('en-IN'))||vs[0]; if(hv) u.voice=hv; speechSynthesis.speak(u); }catch(e){} }
+function speakLast(){ if(lastMsg) speakText(lastMsg); }
+let rec=null, listening=false;
+function toggleMic(){
+  if(listening){ if(rec) rec.stop(); listening=false; return; }
+  try{ let SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){ alert("Use Chrome for voice."); return; } rec=new SR(); rec.lang='en-IN'; rec.onstart=()=>{ listening=true; document.getElementById('listeningText').textContent="Listening..."; }; rec.onresult=(e)=>{ let txt=e.results[0][0].transcript; addChat(txt,'user'); setTimeout(()=>priyaSay(getTutorReply(txt)),500); }; rec.onend=()=>{ listening=false; document.getElementById('listeningText').textContent=""; }; rec.start(); }catch(e){}
+}
+
+/* INIT */
+window.onload=()=>{ renderHome(); renderDashboard(); renderLearn(); renderPracticeTopicTabs(); setTimeout(()=>{ let b=document.getElementById('priyaSpeakingHome'); if(b) b.textContent = userName? `Welcome back, ${userName}! I remember your progress. Your weakest topic is waiting.` : `Hello! I am Priya, your adaptive exam tutor. Take the 2-minute diagnostic and I will build your personal plan.`; },600); };
+</script>
+<script>
+/* ===== SUITE UPGRADE: AI tutor, PDF mock tests, learning path, reports, offline packs, languages ===== */
+(()=>{
+const $=id=>document.getElementById(id),esc=LMT.esc,nl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+const strip=h=>h.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+const P=new URLSearchParams(location.search);
+if(P.get('lang')&&LMT.LANGS[P.get('lang')])LMT.set({lang:P.get('lang')});
+if(P.get('name')&&!userName){userName=P.get('name');localStorage.setItem('priya_user',userName)}
+const o={explainSimpler,explainWithExample,explainWithStory,askLearn,showTab,renderDashboard,saveModel};
+let mockAns=[],T={},busy=false;
+
+/* ---------- UI injection ---------- */
+const langSel=id=>`<select id="${id}" class="bg-white/10 rounded-full px-2 py-1.5 text-xs outline-none" title="Language">${Object.keys(LMT.LANGS).map(l=>`<option ${l===LMT.lang()?'selected':''}>${l}</option>`).join('')}</select>`;
+const links=`<a href="index.html" class="bg-white/10 px-3 py-1.5 rounded-full text-xs whitespace-nowrap">🗺️ Roadmap</a><a href="index.html#teacher" class="bg-white/10 px-3 py-1.5 rounded-full text-xs whitespace-nowrap">👩‍🏫 Teacher</a>`;
+$('userNameLabel').parentElement.insertAdjacentHTML('beforebegin',langSel('langSel')+links+'<span id="netPill" class="chip"></span>');
+$('homeNameLabel').parentElement.insertAdjacentHTML('beforebegin',langSel('langSelH')+links);
+['langSel','langSelH'].forEach(id=>$(id).onchange=e=>{LMT.set({lang:e.target.value});$('langSel').value=$('langSelH').value=e.target.value;LMT.toast('Priya will now teach in '+e.target.value)});
+const net=()=>{const p=$('netPill');if(p)p.textContent=navigator.onLine?'● Online':'○ Offline (built-in mode)'};addEventListener('online',net);addEventListener('offline',net);net();
+const tb=document.querySelector('[data-tab=chat]').parentElement;
+tb.insertAdjacentHTML('beforeend',['path|🗺️ My Path','offline|💾 Offline'].map(x=>{const[a,b]=x.split('|');return`<button data-tab="${a}" onclick="showTab('${a}',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">${b}</button>`}).join(''));
+$('page-app').insertAdjacentHTML('beforeend',`
+<section id="tab-path" class="hidden"><div class="grid md:grid-cols-3 gap-4">
+ <div class="card rounded-3xl p-5"><h3 class="font-bold">🎯 Weak Topics (live)</h3><div id="pathWeak" class="mt-3 space-y-3"></div></div>
+ <div class="md:col-span-2 card rounded-3xl p-5"><div class="flex justify-between flex-wrap gap-2"><div><h3 class="font-bold">🗺️ Your 7-Day Adaptive Path</h3><p id="pathNote" class="text-xs text-zinc-400">Rebuilds itself after every answer.</p></div><div class="flex gap-2 flex-wrap"><button onclick="aiPath()" class="grad px-4 py-2 rounded-full text-xs font-bold">✨ Refine with AI</button><a id="pathFull" href="index.html" class="bg-white/10 px-4 py-2 rounded-full text-xs">Full roadmap →</a></div></div><div id="pathDays" class="mt-4 grid sm:grid-cols-2 gap-2"></div></div></div></section>
+<section id="tab-offline" class="hidden"><div class="grid md:grid-cols-2 gap-4">
+ <div class="card rounded-3xl p-5"><h3 class="font-bold text-lg">💾 Save a Practice Pack</h3><p class="text-sm text-zinc-400">Notes + questions saved on this device in your chosen language. Works with no internet after the first visit.</p>
+ <div class="flex gap-2 mt-4 flex-wrap"><select id="packTopic" class="bg-black/40 rounded-xl px-3 py-2 text-sm outline-none"></select><button onclick="savePack()" id="packBtn" class="grad px-4 py-2 rounded-xl text-sm font-bold">Save pack</button></div><p id="packMsg" class="text-xs text-pink-300 mt-2"></p></div>
+ <div class="card rounded-3xl p-5"><h3 class="font-bold">📦 Saved on this device</h3><div id="packList" class="mt-3 space-y-2"></div><div id="packView" class="mt-3 text-sm text-zinc-300 max-h-[260px] overflow-y-auto"></div></div></div></section>`);
+$('pdfActions').insertAdjacentHTML('afterend',`<div id="pdfTestRow" class="flex gap-2 mt-3 items-center flex-wrap"><select id="pdfN" class="bg-black/40 rounded-xl px-3 py-2 text-xs outline-none"><option>5</option><option selected>10</option><option>15</option></select><button onclick="genPdfTest(+$('pdfN').value)" class="grad px-4 py-2 rounded-full text-xs font-bold">📝 Make Mock Test + Answer Key</button></div>`);
+$('learnContent').insertAdjacentHTML('afterend',`<div class="flex gap-2 mt-3"><button onclick="translateLesson()" class="bg-white/10 px-4 py-2 rounded-full text-xs">🌐 Show in my language</button><button onclick="renderLearn()" class="bg-white/10 px-4 py-2 rounded-full text-xs">↩ Original</button></div>`);
+$('tab-dashboard').insertAdjacentHTML('beforeend','<div id="suiteReport"></div>');
+$('packTopic').innerHTML=Object.keys(TOPICS).map(t=>`<option value="${t}">${TOPICS[t].icon} ${TOPICS[t].name}</option>`).join('')+'<option value="pdf">📄 My PDF / pasted notes</option>';
+window.$=$;
+
+/* ---------- AI tutor + voice (falls back to built-in replies if backend is unreachable) ---------- */
+const weak=()=>Object.keys(TOPICS).map(t=>{const m=getModel(t);return{t,m,score:m.mastery-(m.attempts?m.wrong/m.attempts:.5)*20}}).sort((a,b)=>a.score-b.score);
+window.addChat=(msg,who)=>{const b=$('chatBox');if(!b)return;b.innerHTML+=`<div class="${who==='user'?'text-right':''}"><span class="inline-block ${who==='user'?'bg-pink-600':'bg-white/10'} px-3 py-2 rounded-2xl text-sm max-w-[85%] text-left">${nl(msg)}</span></div>`;b.scrollTop=b.scrollHeight};
+window.addLearnChat=(msg,who)=>{const b=$('learnChat');b.innerHTML+=`<div class="${who==='user'?'text-right':''}"><span class="inline-block ${who==='user'?'bg-pink-600':'bg-white/10'} px-3 py-2 rounded-2xl text-sm max-w-[90%] text-left">${nl(msg)}</span></div>`;b.scrollTop=b.scrollHeight};
+window.speakText=t=>LMT.speak(t);
+async function askPriya(text,extra){try{LMT.toast('Priya is thinking…');const r=await LMT.ai(`Student: ${userName||'learner'}. Weakest topics: ${weak().slice(0,2).map(x=>TOPICS[x.t].name).join(', ')}.${pdfText?` Study material excerpt: ${pdfText.slice(0,2500)}`:''}${extra||''}\nDoubt: ${text}\nExplain step by step in simple words, give one worked example, end with one check question. Under 170 words.`,{system:'You are Priya, a warm tutor. Plain text only.'});priyaSay(r)}catch(e){priyaSay(getTutorReply(text))}}
+window.sendChat=()=>{const i=$('chatInput'),v=i.value.trim();if(!v)return;addChat(v,'user');i.value='';askPriya(v)};
+window.toggleMic=()=>{if(listening&&rec){rec.stop();return}$('listeningText').textContent='Listening in '+LMT.lang()+'…';rec=LMT.listen(t=>{addChat(t,'user');askPriya(t)});if(rec){listening=true;rec.onend=()=>{listening=false;$('listeningText').textContent=''}}else $('listeningText').textContent=''};
+const lessonNow=()=>{const m=getModel(currentTopic);return LESSONS[currentTopic][m.level]||LESSONS[currentTopic][1]};
+const teach=(ask,old)=>async()=>{const ls=lessonNow();try{LMT.toast('Priya is preparing…');const r=await LMT.ai(`Lesson "${ls.title}": ${strip(ls.content)}\n${ask} Under 120 words.`,{system:'You are Priya, a warm tutor. Plain text only.'});addLearnChat(r,'priya');priyaSay(r)}catch(e){old()}};
+window.explainSimpler=teach('Re-explain this for a 10 year old using a daily-life story.',o.explainSimpler);
+window.explainWithExample=teach('Give one fresh worked example, then one practice question for the student.',o.explainWithExample);
+window.explainWithStory=teach('Tell a very short motivating story that teaches the core idea.',o.explainWithStory);
+window.askLearn=async()=>{const i=$('learnInput'),v=i.value.trim();if(!v)return;addLearnChat(v,'user');i.value='';const ls=lessonNow();try{const r=await LMT.ai(`Lesson "${ls.title}": ${strip(ls.content)}\nStudent doubt: ${v}\nAnswer simply with an example. Under 120 words.`,{system:'You are Priya, a warm tutor. Plain text only.'});addLearnChat(r,'priya');priyaSay(r)}catch(e){i.value=v;o.askLearn()}};
+window.translateLesson=async()=>{if(LMT.lang()==='English'){LMT.toast('Pick a language at the top first');return}const m=getModel(currentTopic),ck='lmt-tr:'+currentTopic+m.level+LMT.lang(),ls=lessonNow();let t=localStorage.getItem(ck);
+ if(!t){try{LMT.toast('Translating…');t=await LMT.ai('Translate this lesson, keep numbers, formulas and examples:\n'+strip(ls.content));localStorage.setItem(ck,t)}catch(e){LMT.toast('Translation needs the AI backend. Saved offline packs work without it.');return}}
+ $('learnContent').innerHTML=`<p>${nl(t)}</p>`;priyaSay(t)};
+window.resetAll=()=>{if(confirm('Reset your Priya progress?')){Object.keys(localStorage).filter(k=>k.startsWith('priya_')).forEach(k=>localStorage.removeItem(k));location.reload()}};
+
+/* ---------- Smart mock tests (built-in, PDF, assigned, review) ---------- */
+const valid=q=>q&&typeof q.q==='string'&&Array.isArray(q.opts)&&q.opts.length===4&&Number.isInteger(q.ans)&&q.ans>=0&&q.ans<4;
+function offlineQs(n){const ss=pdfText.split(/(?<=[.!?])\s+/).filter(s=>s.length>40&&s.length<200).sort(()=>Math.random()-.5),pool=[...new Set((pdfText.match(/[A-Za-z]{6,}/g)||[]).map(w=>w.toLowerCase()))],out=[];
+ for(const s of ss){if(out.length>=n)break;const ws=(s.match(/[A-Za-z]{6,}/g)||[]).sort((a,b)=>b.length-a.length);if(!ws.length)continue;const a=ws[0].toLowerCase(),ds=pool.filter(w=>w!==a).sort(()=>Math.random()-.5).slice(0,3);if(ds.length<3)continue;const opts=[a,...ds].sort(()=>Math.random()-.5);out.push({q:s.replace(new RegExp(ws[0]),'_____'),opts,ans:opts.indexOf(a),topic:pdfName||'PDF',level:2,explain:'From your material: '+s})}return out}
+window.genPdfTest=async n=>{if(!pdfText){LMT.toast('Upload a PDF or paste text first');return}if(busy)return;busy=true;LMT.toast('Making your test…');let qs=null;
+ try{qs=(await LMT.ai(`Material:\n${pdfText.slice(0,9000)}\n\nWrite ${n} multiple-choice questions strictly from this material, easy to hard, 4 options each, exactly one correct. JSON array: [{"q":string,"opts":[4 strings],"ans":0-3,"topic":short concept tag,"level":1-3,"explain":one line}]`,{json:true})).filter(valid)}catch(e){}
+ if(!qs||qs.length<3){qs=offlineQs(n);LMT.toast(qs.length?'AI backend unreachable: made fill-in-the-blank questions instead':'Need more text in the PDF')}
+ busy=false;if(qs.length)startCustomTest(qs,{title:pdfName||'PDF test',src:'pdf'})};
+window.genTopicTest=async(topic,n)=>{LMT.toast('Making a '+topic+' test…');try{const qs=(await LMT.ai(`Write ${n||6} multiple-choice questions on "${topic}", easy to hard, 4 options, one correct. JSON array: [{"q":string,"opts":[4 strings],"ans":0-3,"topic":"${topic}","level":1-3,"explain":one line}]`,{json:true})).filter(valid);if(qs.length<2)throw 0;startCustomTest(qs,{title:topic,src:'roadmap'})}catch(e){enterApp('chat');priyaSay(`I could not reach the AI to build a ${topic} test. Ask me your doubts about ${topic} here and I will help.`)}};
+window.startCustomTest=(qs,meta)=>{mockQs=qs;mockIdx=0;mockScore=0;mockAns=[];T=meta||{};mockTimeLeft=T.time||Math.max(120,qs.length*60);enterApp('mock');$('mockSetup').classList.add('hidden');$('mockBox').classList.remove('hidden');$('mockResult').classList.add('hidden');clearInterval(mockTimerInt);mockTimerInt=setInterval(()=>{mockTimeLeft--;const a=Math.floor(mockTimeLeft/60),b=mockTimeLeft%60;$('mockTimer').textContent=`${a}:${b<10?'0':''}${b}`;if(mockTimeLeft<=0)finishMock()},1000);renderMock()};
+window.startMock=()=>{const tp=$('mockTopic').value,all=[];Object.keys(QUESTIONS).forEach(t=>{if(tp==='all'||tp===t)QUESTIONS[t].forEach(q=>all.push({...q,topic:t}))});startCustomTest(all.sort(()=>Math.random()-.5).slice(0,10),{title:'Mock: '+(tp==='all'?'All topics':TOPICS[tp].name),src:'builtin',time:+$('mockTime').value})};
+window.renderMock=()=>{const q=mockQs[mockIdx];$('mockQNo').parentElement.innerHTML=`Question <b id="mockQNo">${mockIdx+1}</b> / ${mockQs.length}`;$('mockBar').style.width=((mockIdx+1)/mockQs.length*100)+'%';
+ $('mockQ').innerHTML=`<p class="text-xs text-zinc-400">${esc(TOPICS[q.topic]?TOPICS[q.topic].name:q.topic)} • Level ${q.level||2}</p><h3 class="text-lg font-bold mt-2">${esc(q.q)}</h3><div class="grid gap-2 mt-3">${q.opts.map((x,i)=>`<button onclick="selectMock(${i},this)" class="opt text-left bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm">${String.fromCharCode(65+i)}. ${esc(x)}</button>`).join('')}</div>`};
+window.nextMock=()=>{const sel=document.querySelector('#mockQ .opt.selected');if(!sel){LMT.toast('Select an answer first');return}const q=mockQs[mockIdx],pick=+sel.dataset.sel,ok=pick===q.ans;mockAns[mockIdx]=pick;if(ok)mockScore++;else mistakes.push({q:q.q,correct:q.opts[q.ans],explain:q.explain||'',topic:q.topic,full:TOPICS[q.topic]?undefined:q});
+ if(TOPICS[q.topic]){const m=getModel(q.topic);m.attempts++;if(ok){m.correct++;m.mastery=Math.min(100,m.mastery+4)}else{m.wrong++;m.mastery=Math.max(0,m.mastery-2)}}saveModel();mockIdx++;mockIdx>=mockQs.length?finishMock():renderMock()};
+const keyHTML=qs=>qs.map((q,i)=>{const p=mockAns[i],ok=p===q.ans;return`<div style="margin:10px 0"><b>Q${i+1}. ${esc(q.q)}</b><br>${ok?'✓':'✗'} Your answer: ${p==null?'(skipped)':esc(q.opts[p])}${ok?'':`<br>✓ Correct: <b>${esc(q.opts[q.ans])}</b>`}<br><i>${esc(q.explain||'')}</i></div>`}).join('');
+let lastKey='';
+window.printKey=()=>{const w=window.open('','_blank');if(!w){LMT.toast('Allow popups to print');return}w.document.write('<title>Answer key</title><body style="font:15px system-ui;max-width:720px;margin:20px auto">'+lastKey+'</body>');w.document.close();w.print()};
+window.finishMock=()=>{clearInterval(mockTimerInt);const qs=mockQs.slice();if(!qs.length)return;mockQs=[];const n=qs.length,pct=Math.round(mockScore/n*100),tp={};
+ qs.forEach((q,i)=>{(tp[q.topic]=tp[q.topic]||[0,0])[1]++;if(mockAns[i]===q.ans)tp[q.topic][0]++});addXP(mockScore*10);
+ lastMock=`${mockScore}/${n} (${pct}%) - ${new Date().toLocaleDateString()}`;localStorage.setItem('priya_last_mock',lastMock);
+ const s=LMT.st();LMT.set({tests:[...(s.tests||[]),{id:Date.now(),ti:T.title||'Test',s:mockScore,o:n,d:new Date().toISOString().slice(0,10),tp}].slice(-30)});saveModel();
+ lastKey=`<h2>${esc(T.title||'Test')} - ${mockScore}/${n}</h2>`+keyHTML(qs);
+ let share='';if(T.assign){const code=LMT.enc({...buildReport(),a:{id:T.assign,s:mockScore,o:n}}),link=LMT.url('index.html','#r='+code);share=`<div class="bg-black/30 rounded-xl p-3 mt-4 text-sm"><p class="font-bold">📤 Send this result to your teacher</p><div class="flex gap-2 mt-2 flex-wrap"><button onclick="LMT.copy('${link}')" class="grad px-3 py-1.5 rounded-full text-xs">Copy link</button><a target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('My test result: '+mockScore+'/'+n+' '+link)}" class="bg-green-600 px-3 py-1.5 rounded-full text-xs">WhatsApp</a></div></div>`}
+ const wrong=qs.filter((q,i)=>mockAns[i]!==q.ans);window._wrong=wrong;
+ const res=$('mockResult');res.classList.remove('hidden');res.innerHTML=`<div class="text-center"><p class="text-5xl font-black">${mockScore}/${n}</p><p class="text-zinc-400">${pct}% • +${mockScore*10} XP • ${mockAns.filter(x=>x!=null).length} answered</p><p class="mt-2 font-bold">${pct>=80?'Outstanding! You are exam ready.':pct>=50?'Good progress. Fix the weak topics below.':'Keep going. Priya will help you improve.'}</p></div>
+ <div class="mt-4 space-y-2">${Object.entries(tp).map(([k,v])=>`<div><p class="text-xs flex justify-between"><span>${esc(TOPICS[k]?TOPICS[k].name:k)}</span><span>${v[0]}/${v[1]}</span></p><div class="mastery-bar"><div class="mastery-fill" style="width:${v[0]/v[1]*100}%"></div></div></div>`).join('')}</div>
+ <details class="mt-4 bg-black/30 rounded-xl p-3 text-sm" open><summary class="font-bold cursor-pointer">🔑 Answer key</summary>${keyHTML(qs)}</details>${share}
+ <div class="flex gap-2 mt-4 flex-wrap">${wrong.length?`<button onclick="startCustomTest(window._wrong,{title:'Retry wrong answers',src:'retry'})" class="grad px-4 py-2 rounded-full text-xs font-bold">Retry ${wrong.length} wrong</button>`:''}<button onclick="printKey()" class="bg-white/10 px-4 py-2 rounded-full text-xs">🖨️ Print answer key</button><button onclick="showTab('path',document.querySelector('[data-tab=path]'))" class="bg-white/10 px-4 py-2 rounded-full text-xs">🗺️ See my path</button><button onclick="document.getElementById('mockResult').classList.add('hidden');document.getElementById('mockSetup').classList.remove('hidden')" class="bg-white/10 px-4 py-2 rounded-full text-xs">New test</button></div>`;
+ priyaSay(pct>=80?'Great score! Check the answer key to be sure.':'Check the answer key. I added your weak topics to My Path.')};
+window.startReviewQuiz=()=>{if(!mistakes.length){LMT.toast('No mistakes to review yet');return}const pool=[];Object.keys(QUESTIONS).forEach(t=>QUESTIONS[t].forEach(x=>pool.push({...x,topic:t})));const qs=mistakes.slice(-10).map(m=>m.full||pool.find(x=>x.q===m.q)).filter(Boolean);qs.length?startCustomTest(qs,{title:'Review quiz',src:'review'}):LMT.toast('Practice a bit first')};
+
+/* ---------- Learning path ---------- */
+const pat=[0,1,0,2,1,0];
+const localPlan=()=>{const w=weak();return pat.map((i,d)=>{const x=w[i%w.length];return{day:d+1,t:x.t,task:`${TOPICS[x.t].name}: Level ${x.m.level} lesson, then 6 practice questions (${x.m.mastery<40?'go slowly, use hints':'push for a level up'})`}}).concat([{day:7,t:null,task:'Mock test on your weakest topics, then clear Review'}])};
+const sig=()=>weak().slice(0,3).map(x=>x.t).join();
+window.renderPath=()=>{const w=weak();$('pathWeak').innerHTML=w.map(x=>`<div><p class="text-xs flex justify-between"><span>${TOPICS[x.t].icon} ${TOPICS[x.t].name} • L${x.m.level}</span><span>${x.m.mastery}%</span></p><div class="mastery-bar"><div class="mastery-fill" style="width:${x.m.mastery}%"></div></div></div>`).join('');
+ const tt=(LMT.st().tests||[]).slice(-10),agg={};tt.forEach(t=>Object.entries(t.tp||{}).forEach(([k,v])=>{if(!TOPICS[k]){(agg[k]=agg[k]||[0,0]);agg[k][0]+=v[0];agg[k][1]+=v[1]}}));
+ const wk=Object.entries(agg).filter(([k,v])=>v[0]/v[1]<.6).slice(0,4);if(wk.length)$('pathWeak').innerHTML+=`<p class="text-xs text-yellow-300 mt-2">From your PDF tests: ${wk.map(([k,v])=>esc(k)+' '+Math.round(v[0]/v[1]*100)+'%').join(' • ')}</p>`;
+ const ap=LMT.st().aiPath,use=ap&&ap.sig===sig()&&ap.lang===LMT.lang();const days=use?ap.days:localPlan();
+ $('pathNote').textContent=use?'AI-refined plan. It auto-switches back to the live plan if your weak topics change.':ap?'Your results changed, so the plan was rebuilt automatically.':'Rebuilds itself after every answer.';
+ $('pathDays').innerHTML=days.map(d=>`<div class="bg-black/30 rounded-2xl p-3"><p class="text-xs text-pink-300 font-bold">DAY ${d.day}</p><p class="text-sm mt-1">${esc(d.task)}</p>${d.t&&TOPICS[d.t]?`<button onclick="startPracticeTopic('${d.t}');showTab('practice',document.querySelector('[data-tab=practice]'))" class="grad px-3 py-1 rounded-full text-[11px] mt-2">Start</button>`:`<button onclick="showTab('mock',document.querySelector('[data-tab=mock]'))" class="grad px-3 py-1 rounded-full text-[11px] mt-2">Take test</button>`}</div>`).join('');
+ const g=Object.keys(agg).concat(w.slice(0,3).map(x=>TOPICS[x.t].name));$('pathFull').href='index.html?subj='+encodeURIComponent(w[0].m.attempts?TOPICS[w[0].t].name:'')+'&goal='+encodeURIComponent('Fix weak topics: '+g.join(', '))+'&name='+encodeURIComponent(userName||'')+'&lang='+LMT.lang()};
+window.aiPath=async()=>{LMT.toast('Refining your path…');const data=weak().map(x=>({topic:x.t,mastery:x.m.mastery,level:x.m.level,wrong:x.m.wrong,attempts:x.m.attempts}));try{const days=await LMT.ai(`Learner data: ${JSON.stringify(data)}. Recent mistakes: ${JSON.stringify(mistakes.slice(-5).map(m=>m.q))}. Build a 7-day study path that targets the weakest topics first, with a mock test on day 7. JSON array: [{"day":1,"t":"topic key from the data or null","task":"one specific sentence"}]`,{json:true});if(!Array.isArray(days)||days.length<5)throw 0;LMT.set({aiPath:{sig:sig(),lang:LMT.lang(),days:days.slice(0,7).map(d=>({day:d.day,t:TOPICS[d.t]?d.t:null,task:String(d.task)}))}});renderPath()}catch(e){LMT.toast('AI backend unreachable. Showing the built-in adaptive path.')}};
+
+/* ---------- Student dashboard: improvement report + teacher share ---------- */
+window.buildReport=()=>{const s=totalStats(),m={};Object.keys(TOPICS).forEach(t=>m[t]=getModel(t).mastery);return{v:1,n:userName||'Student',acc:s.acc,q:s.t,xp,st:streak,m,t:(LMT.st().tests||[]).slice(-8)}};
+const renderReport=()=>{const b=$('suiteReport');if(!b)return;const s=totalStats(),T=(LMT.st().tests||[]).slice(-8).reverse(),h=history,avg=a=>a.length?Math.round(a.reduce((x,y)=>x+y.acc,0)/a.length):0,imp=h.length>=6?avg(h.slice(-5))-avg(h.slice(0,5)):null,w=weak(),code=LMT.enc(buildReport()),link=LMT.url('index.html','#r='+code);
+ b.innerHTML=`<div class="grid md:grid-cols-2 gap-4 mt-4"><div class="card rounded-3xl p-5"><h3 class="font-bold">📈 Improvement Report</h3><div class="grid grid-cols-2 gap-2 mt-3 text-center"><div class="bg-black/30 rounded-xl p-3"><p class="text-xl font-black">${s.acc}%</p><p class="text-[11px] text-zinc-400">Accuracy</p></div><div class="bg-black/30 rounded-xl p-3"><p class="text-xl font-black ${imp>0?'text-green-400':imp<0?'text-red-400':''}">${imp==null?'–':(imp>0?'+':'')+imp+'%'}</p><p class="text-[11px] text-zinc-400">vs. your first answers</p></div></div><p class="text-sm mt-3">💪 Strongest: <b>${TOPICS[w[w.length-1].t].name}</b> • 🎯 Needs work: <b>${TOPICS[w[0].t].name}</b></p><p class="text-xs text-zinc-400 mt-1">${s.t<6?'Answer 6+ questions to see your improvement trend.':'Trend compares your last 5 answers with your first 5.'}</p></div>
+ <div class="card rounded-3xl p-5"><h3 class="font-bold">🧾 Test History</h3><div class="mt-3 space-y-1 text-sm">${T.length?T.map(t=>`<div class="flex justify-between bg-black/30 rounded-xl px-3 py-2"><span class="truncate mr-2">${esc(t.ti)}</span><span class="shrink-0">${t.s}/${t.o} • ${Math.round(t.s/t.o*100)}% • ${t.d}</span></div>`).join(''):'<p class="text-zinc-400">No tests yet. Try a Mock Test or make one from your PDF.</p>'}</div></div></div>
+ <div class="card rounded-3xl p-5 mt-4 flex flex-wrap gap-3 items-center justify-between"><div><h3 class="font-bold">👩‍🏫 Share progress with my teacher</h3><p class="text-xs text-zinc-400">One link with your accuracy, mastery and tests. Nothing is uploaded to a server.</p></div><div class="flex gap-2"><button onclick="LMT.copy('${link}')" class="grad px-4 py-2 rounded-full text-xs font-bold">Copy link</button><a target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('My Priya progress report: '+link)}" class="bg-green-600 px-4 py-2 rounded-full text-xs">WhatsApp</a></div></div>`};
+window.renderDashboard=()=>{o.renderDashboard();renderReport()};
+window.saveModel=()=>{o.saveModel();LMT.set({name:userName||undefined,pm:buildReport().m,pacc:totalStats().acc,pxp:xp});if(!$('tab-path').classList.contains('hidden'))renderPath()};
+
+/* ---------- Offline packs ---------- */
+const pk=()=>Object.keys(localStorage).filter(k=>k.startsWith('lmt-pack:'));
+window.savePack=async()=>{const t=$('packTopic').value,l=LMT.lang(),msg=$('packMsg');let notes,qs;msg.textContent='Saving…';
+ try{if(t==='pdf'){if(!pdfText){msg.textContent='Upload a PDF or paste text in PDF Teacher first.';return}
+  try{const r=await LMT.ai(`Material:\n${pdfText.slice(0,9000)}\n\nWrite concise study notes (key points + definitions) and 8 MCQs. JSON: {"notes":string,"qs":[{"q":string,"opts":[4],"ans":0-3,"topic":string,"level":2,"explain":string}]}`,{json:true});notes=r.notes;qs=(r.qs||[]).filter(valid)}catch(e){notes=pdfText.slice(0,3000);qs=offlineQs(8)}}
+ else{notes=Object.values(LESSONS[t]).map(x=>x.title+'\n'+strip(x.content)).join('\n\n');qs=QUESTIONS[t].map(q=>({...q,topic:t}));
+  if(l!=='English'){try{notes=await LMT.ai('Translate these study notes, keep numbers and formulas:\n'+notes);const tq=await LMT.ai('Translate q, opts, hint and explain to the target language. Keep ans and level unchanged. Return the same JSON array:\n'+JSON.stringify(qs),{json:true});if(tq.length===qs.length&&tq.every(valid))qs=tq.map((q,i)=>({...q,topic:t,ans:qs[i].ans}))}catch(e){msg.textContent='Saved in English (translation needs the AI backend).'}}}
+  localStorage.setItem(`lmt-pack:${t}:${l}`,JSON.stringify({t,l,d:Date.now(),notes,qs}));if(!msg.textContent.startsWith('Saved in'))msg.textContent='✓ Saved. Works offline.';renderOffline()}catch(e){msg.textContent='Could not save (device storage full?).'}};
+window.renderOffline=()=>{const L=pk();$('packList').innerHTML=L.length?L.map(k=>{const p=JSON.parse(localStorage.getItem(k)),kb=Math.round(localStorage.getItem(k).length/1024);return`<div class="bg-black/30 rounded-xl px-3 py-2 flex justify-between items-center gap-2 text-sm"><span>${TOPICS[p.t]?TOPICS[p.t].icon+' '+TOPICS[p.t].name:'📄 PDF notes'} • ${esc(p.l)} • ${kb} KB</span><span class="flex gap-1"><button onclick="packOpen('${k}','read')" class="bg-white/10 px-2 py-1 rounded-full text-xs">Read</button><button onclick="packOpen('${k}','test')" class="grad px-2 py-1 rounded-full text-xs">Practice</button><button onclick="packOpen('${k}','del')" class="bg-white/10 px-2 py-1 rounded-full text-xs">🗑</button></span></div>`}).join(''):'<p class="text-sm text-zinc-400">No packs yet.</p>'};
+window.packOpen=(k,a)=>{const p=JSON.parse(localStorage.getItem(k)||'null');if(!p)return;if(a==='del'){localStorage.removeItem(k);renderOffline();$('packView').innerHTML='';return}
+ if(a==='test'){if(p.qs.length)startCustomTest(p.qs,{title:'Pack: '+(TOPICS[p.t]?TOPICS[p.t].name:'My notes'),src:'pack'});return}
+ $('packView').innerHTML=`<p>${nl(p.notes)}</p><button onclick="LMT.speak(JSON.parse(localStorage.getItem('${k}')).notes,'${p.l}')" class="bg-white/10 px-3 py-1 rounded-full text-xs mt-2">🔊 Listen</button>`};
+
+/* ---------- Navigation hook + startup ---------- */
+window.showTab=(id,b)=>{o.showTab(id,b);if(id==='path')renderPath();if(id==='offline')renderOffline()};
+addEventListener('load',()=>{setTimeout(()=>{
+ const h=location.hash;if(h.startsWith('#t=')){const t=LMT.dec(h.slice(3));if(t&&Array.isArray(t.qs)&&t.qs.filter(valid).length){window.history.replaceState(null,'',location.pathname);startCustomTest(t.qs.filter(valid),{title:t.ti||'Assigned test',src:'assigned',assign:t.id});priyaSay('Your teacher assigned this test. Do your best!')}}
+ else if(P.get('practice')){genTopicTest(P.get('practice'),6)}
+},700)});
+})();
+</script>
+
+</body>
+</html>
