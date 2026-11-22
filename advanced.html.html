@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIYA // OMNIVERSE - Adaptive Exam Prep Tutor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  *{scrollbar-width:thin;scrollbar-color:#ff2d55 transparent}
+  body{font-family:Inter,system-ui,sans-serif;background:#050510;color:#fff}
+  .grad{background:linear-gradient(135deg,#ff2d55,#a855f7,#ec4899)}
+  .grad-text{background:linear-gradient(90deg,#ff2d55,#ec4899,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .glass{background:rgba(255,255,255,.06);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1)}
+  .card{background:#141422;border:1px solid rgba(255,255,255,.08)}
+  .card:hover{border-color:rgba(255,45,85,.45)}
+  .tab-btn.active,.topic-btn.active,.nav-btn.active,.filter-btn.active{background:#ff2d55!important;color:#fff!important}
+  .mastery-bar{height:8px;background:#2a2a3a;border-radius:99px;overflow:hidden}
+  .mastery-fill{height:100%;transition:width .6s;background:linear-gradient(90deg,#ff2d55,#a855f7)}
+  .opt{transition:.15s;cursor:pointer}
+  .opt:hover{border-color:#ff2d55;background:#1f1f33}
+  .opt.correct{background:#14532d!important;border-color:#22c55e!important}
+  .opt.wrong{background:#7f1d1d!important;border-color:#ef4444!important}
+  .opt.selected{border-color:#ff2d55!important;background:#2a1520!important}
+  .opt:disabled{cursor:default;opacity:.95}
+  #priyaImg,#priyaImgHome{filter:drop-shadow(0 20px 40px rgba(255,45,85,.45));animation:breathe 3.2s ease-in-out infinite;object-position:top center}
+  @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .talking{animation:talk .22s infinite alternate!important}
+  @keyframes talk{from{transform:scale(1)}to{transform:scale(1.03)}}
+  .glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,45,85,.35),transparent 70%);filter:blur(10px)}
+  ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:#ff2d55;border-radius:10px}
+  .wave{display:inline-block;animation:wv 1s infinite}
+  @keyframes wv{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+  .chip{font-size:11px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.08);white-space:nowrap}
+  .marquee{animation:marq 18s linear infinite}
+  @keyframes marq{to{transform:translateX(-50%)}}
+  .fade-in{animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  input,select,textarea{color-scheme:dark}
+  .omni-bg{background:radial-gradient(ellipse at bottom,#0a0a2a 0%,#050510 60%);background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1px);background-size:22px 22px}
+  .toast{animation:fade .3s ease}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="sticky top-0 z-50 bg-[#0a0a1e]/95 backdrop-blur border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
+    <button onclick="goHome()" class="flex items-center gap-2">
+      <span class="text-lg">😊</span>
+      <span class="font-black tracking-wider text-[15px]">PRIYA <span class="text-zinc-400">//</span> OMNIVERSE <span class="text-[9px] bg-cyan-400 text-black px-1.5 py-0.5 rounded font-black align-middle">V3 FINAL</span></span>
+    </button>
+    <div class="hidden md:flex items-center gap-2 text-[11px]">
+      <span id="clockTop">00:00:00</span>
+      <span class="bg-green-600/20 text-green-400 border border-green-500/30 px-2 py-1 rounded-full">● SERVER ONLINE</span>
+      <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2 py-1 rounded-full">● AI CORE ONLINE</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="chip hidden sm:inline-block">🔥 <b id="streakValTop">0</b></span>
+      <span class="chip hidden sm:inline-block">⭐ <b id="xpValTop">0</b> XP</span>
+      <button onclick="openProfile()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">👤 <span id="userNameLabelTop">Guest</span></button>
+    </div>
+  </div>
+  <!-- MAIN NAV -->
+  <div class="max-w-7xl mx-auto px-3 pb-2 flex gap-2 overflow-x-auto">
+    <button data-nav="home" onclick="goHome()" class="nav-btn active text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🏠 Home</button>
+    <button data-nav="dashboard" onclick="enterApp('dashboard')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📊 Dashboard</button>
+    <button data-nav="chat" onclick="enterApp('chat')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">💬 AI Chat</button>
+    <button data-nav="learn" onclick="enterApp('learn')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📚 Learn</button>
+    <button data-nav="practice" onclick="enterApp('practice')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🎯 Practice</button>
+    <button data-nav="mock" onclick="enterApp('mock')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📝 Mock</button>
+    <button data-nav="gate" onclick="enterApp('gate')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🎓 GATE / NET</button>
+    <button data-nav="video" onclick="enterApp('video')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">▶ YouTube</button>
+    <button data-nav="pdf" onclick="enterApp('pdf')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📄 PDF</button>
+    <button data-nav="calendar" onclick="enterApp('calendar')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📅 Calendar</button>
+    <button data-nav="books" onclick="enterApp('books')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">📖 Books</button>
+    <button data-nav="music" onclick="enterApp('music')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🎵 Music</button>
+    <button data-nav="teacher" onclick="enterApp('teacher')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">👩‍🏫 Teacher</button>
+    <button data-nav="review" onclick="enterApp('review')" class="nav-btn text-xs bg-white/10 px-4 py-2 rounded-full whitespace-nowrap">🔁 Review</button>
+  </div>
+  <!-- TWO MODELS SWITCHING -->
+  <div class="max-w-7xl mx-auto px-3 pb-2 flex gap-2 flex-wrap items-center">
+    <button id="btnModelA" onclick="switchModel('tutor')" class="px-3 py-1.5 rounded-full text-[11px] font-bold bg-pink-600">MODEL A: TUTOR</button>
+    <button id="btnModelB" onclick="switchModel('companion')" class="px-3 py-1.5 rounded-full text-[11px] font-bold bg-white/10">MODEL B: COMPANION</button>
+    <span class="text-[11px] text-zinc-400" id="modelTagline">Learner Model Active - I adapt to how you learn.</span>
+    <button onclick="speakProjectIntro()" class="ml-auto bg-cyan-500 text-black px-3 py-1.5 rounded-full text-[11px] font-bold">🔊 Play Project Intro</button>
+  </div>
+</div>
+
+<!-- APP TOP BAR - SHOWS INSIDE APP -->
+<header id="topBar" class="hidden sticky top-[118px] z-40 bg-[#0c0c18]/92 backdrop-blur border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between gap-2">
+    <span class="text-xs text-zinc-400">Learner Model • <b id="levelVal" class="text-white">Beginner</b></span>
+    <div class="flex gap-2"><span class="chip">🔥 <b id="streakVal">0</b></span><span class="chip">⭐ <b id="xpVal">0</b> XP</span><button onclick="resetAll()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">Reset</button></div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 pb-2 flex gap-2 overflow-x-auto">
+    <button data-tab="dashboard" onclick="showTab('dashboard',this)" class="tab-btn active text-xs bg-white/10 px-4 py-2 rounded-full">📊 Dashboard</button>
+    <button data-tab="learn" onclick="showTab('learn',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">📚 Learn</button>
+    <button data-tab="practice" onclick="showTab('practice',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">🎯 Practice</button>
+    <button data-tab="mock" onclick="showTab('mock',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">📝 Mock</button>
+    <button data-tab="gate" onclick="showTab('gate',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">🎓 GATE / NET</button>
+    <button data-tab="video" onclick="showTab('video',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">▶ YouTube</button>
+    <button data-tab="pdf" onclick="showTab('pdf',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">📄 PDF</button>
+    <button data-tab="calendar" onclick="showTab('calendar',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">📅 Calendar</button>
+    <button data-tab="books" onclick="showTab('books',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">📖 Books</button>
+    <button data-tab="music" onclick="showTab('music',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">🎵 Music</button>
+    <button data-tab="teacher" onclick="showTab('teacher',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">👩‍🏫 Teacher</button>
+    <button data-tab="review" onclick="showTab('review',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">🔁 Review</button>
+    <button data-tab="chat" onclick="showTab('chat',this)" class="tab-btn text-xs bg-white/10 px-4 py-2 rounded-full">💬 Ask Priya</button>
+  </div>
+</header>
+
+<!-- ============ HOMEPAGE ============ -->
+<div id="page-home" class="omni-bg min-h-screen">
+  <div class="max-w-7xl mx-auto px-3 pb-24">
+    <div class="grid md:grid-cols-[1.1fr_1fr] gap-3 pt-3">
+      <!-- LEFT: FULL BODY PRIYA -->
+      <div class="relative rounded-[24px] overflow-hidden border border-white/10 bg-[#0a0a22] min-h-[540px] flex flex-col">
+        <div class="flex justify-between px-4 pt-3 text-[11px] text-zinc-400"><span>● PRIYA IS LIVE - <span id="modelNameHome">TUTOR MODEL</span></span><span id="homeClock">00:00:00</span></div>
+        <div class="relative flex-1 flex items-end justify-center">
+          <div class="absolute bottom-6 w-[78%] h-[78%] rounded-full bg-pink-600/20 blur-[50px]"></div>
+          <img id="priyaImgHome" src="priya.png" alt="Priya" class="relative z-10 w-full max-w-[420px] h-[480px] md:h-[560px] object-cover object-top cursor-pointer" onclick="priyaSay(getTutorReply('hello'))">
+        </div>
+        <div class="absolute bottom-3 left-3 right-3 z-20">
+          <div class="glass rounded-2xl px-4 py-3">
+            <p class="text-[11px] text-zinc-400">PRIYA SAYS:</p>
+            <p id="priyaSpeakingHome" class="text-sm mt-1">Hello! I will find your weak topics in 2 minutes, then build a plan just for you.</p>
+            <div class="flex gap-2 mt-2 flex-wrap">
+              <button onclick="startFreeDiagnostic()" class="grad px-4 py-2 rounded-full text-xs font-bold">▶ Diagnostic - 2 Min</button>
+              <button onclick="speakLast()" class="bg-white/10 px-3 py-2 rounded-full text-xs">🔊 Listen</button>
+              <button onclick="speakProjectIntro()" class="bg-cyan-500 text-black px-3 py-2 rounded-full text-xs font-bold">▶ Project Intro</button>
+            </div>
+          </div>
+        </div>
+        <div class="absolute top-12 right-3 z-20 flex flex-col gap-2 text-[11px]">
+          <span class="bg-black/60 px-2 py-1 rounded-full">🎯 <span id="homeLevelBadge">Beginner</span></span>
+          <span class="bg-black/60 px-2 py-1 rounded-full">⭐ <span id="homeXpBadge">0 XP</span></span>
+        </div>
+      </div>
+
+      <!-- RIGHT: LEARNER MODEL + MUSIC + TASKS -->
+      <div class="space-y-3">
+        <div class="card rounded-[24px] p-4">
+          <div class="flex justify-between"><p class="font-black text-sm">YOUR LEARNER MODEL</p><span class="text-xs bg-green-600 px-2 py-1 rounded-full">● Online</span></div>
+          <div class="grid grid-cols-4 gap-2 mt-3 text-center">
+            <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="homeAccuracy">0%</p><p class="text-[10px] text-zinc-400">Accuracy</p></div>
+            <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="homeQuestions">0</p><p class="text-[10px] text-zinc-400">Questions</p></div>
+            <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="homeMastery">0%</p><p class="text-[10px] text-zinc-400">Mastery</p></div>
+            <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="homeTasksCount">0</p><p class="text-[10px] text-zinc-400">Tasks</p></div>
+          </div>
+          <div class="mt-3">
+            <p class="text-xs flex justify-between"><span>Level Progress</span><span id="homeLevelPct">10% to Next Level</span></p>
+            <div class="mastery-bar mt-1"><div id="homeLevelBar" class="mastery-fill" style="width:10%"></div></div>
+            <p class="text-xs mt-2"><b id="homeLevel">Beginner • Level 1</b> • Weakest: <b id="homeWeakest" class="text-pink-400">Start Now</b> • Next: <b id="homeNextLesson">Light L1</b></p>
+          </div>
+          <div class="space-y-2 mt-3" id="homeModelPreview"></div>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <button onclick="enterApp('dashboard')" class="grad flex-1 py-2 rounded-full text-xs font-bold">Dashboard →</button>
+            <button onclick="enterApp('gate')" class="bg-purple-600 flex-1 py-2 rounded-full text-xs font-bold">GATE / NET →</button>
+            <button onclick="enterApp('teacher')" class="bg-yellow-600 flex-1 py-2 rounded-full text-xs font-bold">Teacher →</button>
+          </div>
+        </div>
+
+        <div class="card rounded-[24px] p-4">
+          <p class="font-bold text-sm">🎵 Music - Offline + Online</p>
+          <div class="flex gap-2 mt-2 flex-wrap">
+            <button onclick="prevSong()" class="bg-white/10 w-9 h-9 rounded-full">⏮</button>
+            <button onclick="togglePlay()" id="playBtnHome" class="bg-cyan-400 text-black px-4 py-2 rounded-full text-xs font-bold">▶ Play</button>
+            <button onclick="nextSong()" class="bg-white/10 w-9 h-9 rounded-full">⏭</button>
+            <button onclick="playOnlineSample()" class="bg-white/10 px-3 py-2 rounded-full text-xs">🌐 Online Sample</button>
+          </div>
+          <p class="text-[11px] text-zinc-400 mt-2" id="nowPlayingLabel">No song playing</p>
+          <div id="songListHome" class="mt-2 space-y-1 max-h-[110px] overflow-y-auto text-sm"></div>
+          <audio id="audioPlayer" class="hidden"></audio>
+        </div>
+
+        <div class="card rounded-[24px] p-4">
+          <p class="font-bold text-sm">📅 Today Tasks + Reminders</p>
+          <div id="homeTasks" class="mt-2 space-y-1 text-sm"></div>
+          <button onclick="enterApp('calendar')" class="bg-white/10 w-full py-2 rounded-full text-xs mt-2">Add Task / Reminder →</button>
+        </div>
+
+        <div class="card rounded-[24px] p-4">
+          <p class="font-bold text-sm">Try Live Demo - Adaptation</p>
+          <p class="text-xs text-zinc-400 mt-1">Mirror: Object at 20cm, f = 10cm, Find v? Use 1/v + 1/u = 1/f, u = -20</p>
+          <div class="grid grid-cols-2 gap-2 mt-2" id="homeDemoOpts"></div>
+          <p id="homeDemoFeedback" class="text-xs mt-2 min-h-[18px]"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-y border-white/10 bg-black/30 overflow-hidden py-2 mt-3 rounded-xl">
+      <div class="flex gap-8 whitespace-nowrap marquee w-max text-sm text-zinc-300">
+        <span>💡 Light • 🔋 Electricity • 🎓 GATE • 🎓 UGC NET • 📝 Mock Tests • 📄 PDF To Mock • ▶ YouTube Explain • 📅 Calendar • 🎵 Music • 📖 Books • 👩‍🏫 Teacher Dashboard • </span>
+        <span>💡 Light • 🔋 Electricity • 🎓 GATE • 🎓 UGC NET • 📝 Mock Tests • 📄 PDF To Mock • ▶ YouTube Explain • 📅 Calendar • 🎵 Music • 📖 Books • 👩‍🏫 Teacher Dashboard • </span>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <h2 class="text-3xl font-black">Everything In One Place.<br><span class="grad-text">Learn, Test, Plan, Relax.</span></h2>
+      <div class="grid md:grid-cols-4 gap-3 mt-5">
+        <div class="card rounded-3xl p-5"><p class="text-2xl">🎓</p><h3 class="font-bold mt-2">GATE + UGC NET</h3><p class="text-sm text-zinc-400">Notes + Mock Tests for GATE and UGC NET. Topic wise.</p><button onclick="enterApp('gate')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Open →</button></div>
+        <div class="card rounded-3xl p-5"><p class="text-2xl">▶</p><h3 class="font-bold mt-2">YouTube Explain</h3><p class="text-sm text-zinc-400">Search any topic, watch video, Priya explains after video.</p><button onclick="enterApp('video')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Watch →</button></div>
+        <div class="card rounded-3xl p-5"><p class="text-2xl">📄</p><h3 class="font-bold mt-2">PDF To Mock</h3><p class="text-sm text-zinc-400">Upload PDF, Priya makes notes, quiz and full mock. Whole or part by part.</p><button onclick="enterApp('pdf')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Upload →</button></div>
+        <div class="card rounded-3xl p-5"><p class="text-2xl">👩‍🏫</p><h3 class="font-bold mt-2">Teacher Dashboard</h3><p class="text-sm text-zinc-400">Class gaps, common misconceptions, at-risk students.</p><button onclick="enterApp('teacher')" class="mt-3 bg-white/10 px-3 py-1.5 rounded-full text-xs">Open →</button></div>
+      </div>
+    </div>
+
+    <div class="mt-8"><h2 class="text-3xl font-black">Choose Your Subject - Class 10 Physics</h2><div id="homeSubjects" class="grid md:grid-cols-5 gap-3 mt-5"></div></div>
+    <div class="card rounded-3xl p-6 flex flex-col md:flex-row justify-between gap-4 items-center mt-6"><div><h3 class="text-2xl font-black">Start Today. Improve Every Day.</h3><p class="text-zinc-400 text-sm">10 questions a day = 300 questions a month.</p></div><div class="flex gap-2"><button onclick="startFreeDiagnostic()" class="grad px-6 py-3 rounded-full font-bold">Start Free →</button><button onclick="enterApp('gate')" class="bg-white/10 px-6 py-3 rounded-full font-bold">GATE / NET</button></div></div>
+    <footer class="py-5 text-center text-xs text-zinc-500">Priya Adaptive Tutor • Omniverse V3 • Class 10 Physics • GATE • UGC NET • PDF • Calendar • Music • Books • Teacher Dashboard</footer>
+  </div>
+  <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 bg-[#141422]/95 border border-white/15 rounded-full px-2 py-2 flex gap-1">
+    <button onclick="goHome()" class="w-9 h-9 rounded-full bg-pink-600">🏠</button>
+    <button onclick="enterApp('chat')" class="w-9 h-9 rounded-full bg-white/10">💬</button>
+    <button onclick="enterApp('gate')" class="w-9 h-9 rounded-full bg-white/10">🎓</button>
+    <button onclick="enterApp('video')" class="w-9 h-9 rounded-full bg-white/10">▶</button>
+    <button onclick="enterApp('pdf')" class="w-9 h-9 rounded-full bg-white/10">📄</button>
+    <button onclick="enterApp('calendar')" class="w-9 h-9 rounded-full bg-white/10">📅</button>
+    <button onclick="enterApp('teacher')" class="w-9 h-9 rounded-full bg-white/10">👩‍🏫</button>
+    <button onclick="enterApp('music')" class="w-9 h-9 rounded-full bg-white/10">🎵</button>
+  </div>
+</div>
+
+<!-- APP CONTAINER - Parts 2 to 6 will fill these sections -->
+<main id="page-app" class="hidden max-w-7xl mx-auto px-4 py-4 pb-24">
+<!-- DASHBOARD -->
+<section id="tab-dashboard">
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="md:col-span-2 card rounded-3xl p-5">
+      <div class="flex gap-5">
+        <div class="relative shrink-0 hidden sm:block">
+          <div class="glow"></div>
+          <img id="priyaImg" src="priya.png" alt="Priya" class="relative w-[170px] h-[230px] object-cover object-top rounded-2xl cursor-pointer" onclick="priyaSay(getTutorReply('hello'))">
+          <div id="voiceWave" class="hidden absolute bottom-2 left-1/2 -translate-x-1/2 gap-1 bg-black/70 px-2 py-1 rounded-full"><span class="wave w-1 h-3 bg-pink-500 rounded"></span><span class="wave w-1 h-5 bg-purple-400 rounded"></span><span class="wave w-1 h-3 bg-pink-500 rounded"></span></div>
+        </div>
+        <div class="flex-1">
+          <p class="text-xs tracking-widest text-pink-400 font-bold">ADAPTIVE TUTOR • LEARNER MODEL ACTIVE</p>
+          <h2 class="text-2xl font-black mt-1">Hello <span id="helloName" class="text-pink-400">Learner</span>,<br>Ready to level up?</h2>
+          <p id="priyaSpeaking" class="text-sm text-zinc-300 mt-2 min-h-[40px]">I analyzed your learning pattern. Let us start with your weakest topic first.</p>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <button onclick="startAdaptive()" class="grad px-4 py-2 rounded-full text-sm font-bold">▶ Adaptive Session</button>
+            <button onclick="showTab('practice',document.querySelector('[data-tab=practice]'))" class="bg-white/10 px-4 py-2 rounded-full text-sm">Practice Weak Topics</button>
+            <button onclick="speakLast()" class="bg-white/10 px-3 py-2 rounded-full text-sm">🔊 Listen</button>
+            <button onclick="speakProjectIntro()" class="bg-cyan-500 text-black px-3 py-2 rounded-full text-sm font-bold">▶ Project Intro</button>
+          </div>
+          <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div class="glass rounded-xl p-2"><p class="text-xl font-black" id="statAccuracy">0%</p><p class="text-[11px] text-zinc-400">Accuracy</p></div>
+            <div class="glass rounded-xl p-2"><p class="text-xl font-black" id="statAnswered">0</p><p class="text-[11px] text-zinc-400">Questions</p></div>
+            <div class="glass rounded-xl p-2"><p class="text-xl font-black" id="statMastery">0%</p><p class="text-[11px] text-zinc-400">Avg Mastery</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold">📈 Your Progress</h3>
+      <div class="h-[180px] mt-2"><canvas id="progressChart"></canvas></div>
+      <div class="mt-3"><p class="text-xs text-zinc-400 flex justify-between"><span>Next Goal</span><span id="nextGoalText">Complete 10 questions</span></p><div class="mastery-bar mt-1"><div id="goalBar" class="mastery-fill" style="width:0%"></div></div></div>
+      <div class="mt-4 flex gap-2"><button onclick="startFreeDiagnostic()" class="flex-1 grad py-2 rounded-full text-xs font-bold">Retake Diagnostic</button><button onclick="showTab('mock',document.querySelector('[data-tab=mock]'))" class="flex-1 bg-white/10 py-2 rounded-full text-xs">Mock Test</button></div>
+    </div>
+  </div>
+
+  <h3 class="font-bold mt-6 mb-3">🧠 Your Learner Model - Mastery by Concept</h3>
+  <div id="masteryGrid" class="grid md:grid-cols-3 gap-3"></div>
+
+  <h3 class="font-bold mt-6 mb-3">🗺️ Concept Graph - Class 10 Physics</h3>
+  <div class="card rounded-3xl p-5"><p class="text-sm text-zinc-400">Priya unlocks next concept only when prerequisite mastery is 50% or more.</p><div id="conceptGraph" class="mt-3 space-y-2"></div></div>
+
+  <div class="grid md:grid-cols-2 gap-4 mt-4">
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">🎯 Recommended Next - Based on Your Model</h3><div id="recommendBox" class="mt-3 space-y-2"></div></div>
+    <div class="card rounded-3xl p-5"><h3 class="font-bold">⚠️ Common Mistakes - I Remember Them</h3><div id="mistakeBox" class="mt-3 space-y-2 text-sm text-zinc-300"></div></div>
+  </div>
+</section>
+
+<!-- LEARN - PLACEHOLDER FOR PART 3, FILLED IN PART 3 -->
+<!-- LEARN -->
+<section id="tab-learn" class="hidden">
+  <div class="flex gap-2 flex-wrap mb-4" id="topicTabs"></div>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="md:col-span-2 card rounded-3xl p-5">
+      <div class="flex justify-between items-start gap-2">
+        <div><h3 id="learnTitle" class="text-xl font-black">Light - Basics</h3><p class="text-xs text-zinc-400"><span id="learnLevel">Level 1 • Easy</span> • <span id="learnMastery">Mastery 0%</span> • <span id="learnPrereq">Prereq: None</span></p></div>
+        <span id="learnBadge" class="text-xs bg-green-600 px-3 py-1 rounded-full shrink-0">EASY</span>
+      </div>
+      <div id="learnContent" class="mt-4 space-y-3 text-[15px] leading-relaxed text-zinc-200"></div>
+      <div class="flex gap-2 mt-5 flex-wrap">
+        <button onclick="explainSimpler()" class="bg-pink-600 px-4 py-2 rounded-full text-sm">👶 Explain Simpler</button>
+        <button onclick="explainWithExample()" class="bg-purple-600 px-4 py-2 rounded-full text-sm">💡 Example</button>
+        <button onclick="explainWithStory()" class="bg-white/10 px-4 py-2 rounded-full text-sm">📖 Story Mode</button>
+        <button onclick="markUnderstood()" class="bg-green-600 px-4 py-2 rounded-full text-sm">✓ Got It</button>
+        <button onclick="markConfused()" class="bg-yellow-600 px-4 py-2 rounded-full text-sm">😕 Still Confused</button>
+        <button onclick="openVideoForTopic()" class="bg-red-600 px-4 py-2 rounded-full text-sm">▶ Watch Video</button>
+      </div>
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <button onclick="prevLesson()" class="bg-white/10 px-4 py-2 rounded-full text-sm">← Prev Level</button>
+        <button onclick="nextLesson()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Next Level →</button>
+        <button onclick="showTab('practice',document.querySelector('[data-tab=practice]')); startPracticeTopic(currentTopic)" class="grad px-4 py-2 rounded-full text-sm font-bold">Practice This Concept →</button>
+      </div>
+      <div class="mt-4 bg-black/30 rounded-xl p-3">
+        <p class="font-bold text-sm">🎯 Why Priya Picked This Concept?</p>
+        <p id="learnWhy" class="text-xs text-zinc-400 mt-1">Lowest mastery + Unlocked + Prerequisite done.</p>
+      </div>
+    </div>
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold">💬 Priya Explains</h3>
+      <div id="learnChat" class="mt-3 space-y-2 text-sm max-h-[320px] overflow-y-auto"></div>
+      <div class="flex gap-2 mt-3"><input id="learnInput" onkeypress="if(event.key==='Enter') askLearn()" placeholder="Ask about this concept..." class="flex-1 bg-black/40 rounded-full px-3 py-2 text-sm outline-none border border-white/10"><button onclick="askLearn()" class="grad w-9 h-9 rounded-full shrink-0">➤</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRACTICE - ADAPTIVE + MISCONCEPTION -->
+<section id="tab-practice" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto">
+    <div class="flex justify-between flex-wrap gap-2">
+      <div><h3 class="font-bold">Adaptive Practice - Weak Concept First</h3><p class="text-xs text-zinc-400">2 right in a row = Level Up. 2 wrong = Level Down + Hint + Misconception Fix.</p></div>
+      <div class="text-right"><p class="text-xs">Current Difficulty</p><p id="practiceLevelLabel" class="font-black text-pink-400">Level 1 - Easy</p><p class="text-xs">Streak: <b id="sessionStreak">0</b> • Concept: <b id="practiceConceptLabel">Light</b></p></div>
+    </div>
+    <div class="flex gap-2 mt-3 flex-wrap" id="practiceTopicTabs"></div>
+    <div class="mastery-bar mt-3"><div id="practiceProgress" class="mastery-fill" style="width:0%"></div></div>
+
+    <div id="practiceBox" class="mt-5"></div>
+
+    <!-- REASONING BOX - KEY FOR MISCONCEPTION DETECTION -->
+    <div id="reasoningBox" class="hidden mt-4 bg-black/30 rounded-xl p-3">
+      <p class="font-bold text-sm">🧠 Why did you choose this answer? Type your reasoning in 1 line:</p>
+      <p class="text-[11px] text-zinc-400">Priya detects misconception from reasoning, not just final answer.</p>
+      <input id="reasoningInput" placeholder="Example: I added 1/v + 1/u because..." class="w-full bg-black/40 rounded-xl px-3 py-2 text-sm mt-2 outline-none border border-white/10">
+      <button onclick="submitReasoning()" class="grad px-4 py-2 rounded-full text-xs mt-2 font-bold">Submit Reasoning → Priya Will Detect Misconception</button>
+      <p class="text-[11px] text-zinc-400 mt-1">Skip if you are in a hurry, but reasoning gives 2x faster improvement.</p>
+    </div>
+
+    <div id="practiceFeedback" class="mt-3 text-sm"></div>
+    <div id="misconceptionBox" class="hidden mt-3 bg-red-600/20 border border-red-500/30 rounded-xl p-3 text-sm"></div>
+    <div class="flex gap-2 mt-4 flex-wrap">
+      <button onclick="nextPractice()" class="grad px-5 py-2 rounded-full text-sm font-bold">Next Question →</button>
+      <button onclick="showHint()" class="bg-white/10 px-4 py-2 rounded-full text-sm">💡 Hint</button>
+      <button onclick="skipPractice()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Skip</button>
+      <button onclick="openVideoForTopic()" class="bg-red-600 px-4 py-2 rounded-full text-sm">▶ Video Explain</button>
+    </div>
+  </div>
+
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto mt-4">
+    <h3 class="font-bold">📊 How Priya Chooses Next Question</h3>
+    <div id="generationLog" class="text-sm text-zinc-300 mt-2 space-y-1"></div>
+  </div>
+</section>
+<p class="text-sm text-zinc-400 mt-2">Part 3 will fill this with lessons, examples, story mode, and Priya explains.</p><button onclick="enterApp('dashboard')" class="grad px-4 py-2 rounded-full text-sm mt-3">Back to Dashboard</button></div>
+</section>
+
+  <section id="tab-practice" class="hidden"></section>
+<!-- MOCK TEST -->
+<section id="tab-mock" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto">
+    <div id="mockSetup">
+      <h3 class="text-xl font-black">Mock Test - Real Exam Simulation</h3>
+      <p class="text-sm text-zinc-400 mt-1">10 questions • Timer • Instant result + Learner Model update + Misconception Report</p>
+      <div class="grid grid-cols-3 gap-2 mt-4">
+        <select id="mockTopic" class="bg-black/40 rounded-xl px-3 py-2 text-sm"><option value="all">All Topics - Class 10 Physics</option><option value="light">Light</option><option value="reflection">Reflection</option><option value="mirror">Mirror Formula</option><option value="refraction">Refraction</option><option value="lens">Lens</option><option value="electricity">Electricity</option><option value="current">Current</option><option value="resistance">Resistance</option><option value="circuits">Circuits</option><option value="power">Power</option><option value="gate">GATE</option><option value="net">UGC NET</option><option value="pdf">PDF Mock</option></select>
+        <select id="mockTime" class="bg-black/40 rounded-xl px-3 py-2 text-sm"><option value="600">10 Minutes</option><option value="300">5 Minutes</option><option value="1200">20 Minutes</option></select>
+        <button onclick="startMock()" class="grad rounded-xl py-2 text-sm font-bold">Start Test →</button>
+      </div>
+      <div class="mt-4 bg-black/30 rounded-xl p-3 text-sm"><p class="font-bold">Last Mock: <span id="lastMockText">No test yet</span></p></div>
+      <div class="mt-3 flex gap-2 flex-wrap">
+        <button onclick="createMockFromPDF()" class="bg-purple-600 px-4 py-2 rounded-full text-xs font-bold">📄 Create Mock From PDF</button>
+        <button onclick="startMockFor('gate')" class="bg-white/10 px-4 py-2 rounded-full text-xs">GATE Mock</button>
+        <button onclick="startMockFor('net')" class="bg-white/10 px-4 py-2 rounded-full text-xs">UGC NET Mock</button>
+      </div>
+    </div>
+    <div id="mockBox" class="hidden">
+      <div class="flex justify-between"><p class="text-sm">Question <b id="mockQNo">1</b> / <span id="mockTotal">10</span></p><p class="font-black text-pink-400" id="mockTimer">10:00</p></div>
+      <div class="mastery-bar mt-2"><div id="mockBar" class="mastery-fill" style="width:10%"></div></div>
+      <div id="mockQ" class="mt-4"></div>
+      <button onclick="nextMock()" class="grad px-5 py-2 rounded-full text-sm font-bold mt-4">Next →</button>
+    </div>
+    <div id="mockResult" class="hidden mt-4"></div>
+  </div>
+</section>
+
+<!-- GATE / UGC NET -->
+<section id="tab-gate" class="hidden">
+  <div class="flex gap-2 flex-wrap mb-4">
+    <button onclick="setGateFilter('all')" class="filter-btn active bg-white/10 px-4 py-2 rounded-full text-sm" data-gate="all">All</button>
+    <button onclick="setGateFilter('gate')" class="filter-btn bg-white/10 px-4 py-2 rounded-full text-sm" data-gate="gate">🎓 GATE Only</button>
+    <button onclick="setGateFilter('net')" class="filter-btn bg-white/10 px-4 py-2 rounded-full text-sm" data-gate="net">🎓 UGC NET Only</button>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold text-lg">🎓 GATE + UGC NET Preparation</h3>
+      <p class="text-sm text-zinc-400 mt-1">Notes + Mock Tests. Select exam, read notes, take mock, track mastery.</p>
+      <div class="grid grid-cols-2 gap-2 mt-4">
+        <select id="gateExam" onchange="renderGate()" class="bg-black/40 rounded-xl px-3 py-2 text-sm"><option value="gate">GATE - Computer Science</option><option value="gate-me">GATE - Mechanical</option><option value="gate-ee">GATE - Electrical</option><option value="net">UGC NET - Paper 1</option><option value="net-cs">UGC NET - Computer Science</option><option value="net-edu">UGC NET - Education</option></select>
+        <button onclick="startGateMock()" class="grad rounded-xl py-2 text-sm font-bold">Start GATE / NET Mock →</button>
+      </div>
+      <div id="gateNotesBox" class="mt-4 space-y-3 text-sm"></div>
+    </div>
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold">📄 Create Notes + Mock From PDF For GATE / NET</h3>
+      <p class="text-sm text-zinc-400">Upload GATE / NET PDF. Priya makes notes + 10 question mock.</p>
+      <label class="block mt-3 text-center bg-white/10 py-4 rounded-2xl border-2 border-dashed border-white/20 cursor-pointer">📄 Choose GATE / NET PDF<input type="file" accept=".pdf" hidden onchange="readPDFForGate(this)"></label>
+      <p id="gatePdfStatus" class="text-xs text-pink-300 mt-2">No PDF yet.</p>
+      <div id="gatePdfOutput" class="mt-3 text-sm space-y-2 max-h-[320px] overflow-y-auto"></div>
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <button onclick="explainGatePDF('notes')" class="bg-pink-600 px-3 py-2 rounded-full text-xs">📝 Notes</button>
+        <button onclick="explainGatePDF('mock')" class="bg-purple-600 px-3 py-2 rounded-full text-xs">📝 Make Mock</button>
+        <button onclick="explainGatePDF('plan')" class="bg-yellow-600 px-3 py-2 rounded-full text-xs">📅 30 Day Plan</button>
+      </div>
+    </div>
+  </div>
+  <div class="card rounded-3xl p-5 mt-4"><h3 class="font-bold">📊 GATE / NET Mock History</h3><div id="gateHistory" class="mt-3 text-sm text-zinc-300"></div></div>
+</section>
+
+<!-- YOUTUBE VIDEO EXPLAIN -->
+<section id="tab-video" class="hidden">
+  <div class="card rounded-3xl p-5">
+    <h3 class="font-bold text-lg">▶ YouTube Video Explain</h3>
+    <p class="text-sm text-zinc-400">Search any topic. Watch video. Priya explains after video in simple words + Quiz.</p>
+    <div class="flex gap-2 mt-4 flex-wrap">
+      <input id="videoSearch" placeholder="Search: Mirror Formula, GATE DBMS, UGC NET Paper 1, Refraction..." class="flex-1 min-w-[220px] bg-black/40 rounded-full px-4 py-2 text-sm outline-none border border-white/10" onkeypress="if(event.key==='Enter') searchVideo()">
+      <button onclick="searchVideo()" class="grad px-5 py-2 rounded-full text-sm font-bold">Search YouTube →</button>
+      <button onclick="playTopicVideo('Mirror Formula')" class="bg-white/10 px-4 py-2 rounded-full text-sm">Mirror</button>
+      <button onclick="playTopicVideo('GATE DBMS')" class="bg-white/10 px-4 py-2 rounded-full text-sm">GATE</button>
+      <button onclick="playTopicVideo('UGC NET Paper 1')" class="bg-white/10 px-4 py-2 rounded-full text-sm">NET</button>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-4">
+      <div>
+        <div class="aspect-video bg-black rounded-2xl overflow-hidden"><iframe id="ytFrame" class="w-full h-full" src="https://www.youtube.com/embed/8Yp5zG6k6Yw" title="YouTube" frameborder="0" allowfullscreen></iframe></div>
+        <p class="text-sm mt-2 font-bold" id="ytTitle">Mirror Formula - Basic Concepts</p>
+        <p class="text-xs text-zinc-400" id="ytDesc">Watch, then click Priya Explain for simple summary.</p>
+      </div>
+      <div>
+        <h4 class="font-bold">💬 Priya Video Explain</h4>
+        <div id="videoExplainBox" class="mt-2 text-sm space-y-2 bg-black/30 rounded-xl p-3 min-h-[160px]">Click a video, then click Explain.</div>
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <button onclick="explainVideo()" class="bg-pink-600 px-4 py-2 rounded-full text-xs">✨ Priya Explain This Video</button>
+          <button onclick="videoQuiz()" class="bg-purple-600 px-4 py-2 rounded-full text-xs">🎯 Quiz From Video</button>
+          <button onclick="speakVideoExplain()" class="bg-white/10 px-4 py-2 rounded-full text-xs">🔊 Listen</button>
+        </div>
+        <div class="mt-4"><p class="font-bold text-sm">Suggested Videos</p><div id="videoList" class="mt-2 space-y-2"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PDF TEACHER - WHOLE OR PART BY PART -->
+<section id="tab-pdf" class="hidden">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold text-lg">📄 PDF Teacher - Whole Or Part By Part</h3>
+      <p class="text-sm text-zinc-400">Upload PDF. Choose Whole PDF or Part By Part. Priya makes lessons, notes, quiz, mock.</p>
+      <label class="block mt-4 text-center bg-white/10 hover:bg-pink-600 cursor-pointer py-6 rounded-2xl border-2 border-dashed border-white/20">📄 Choose PDF<input type="file" accept=".pdf" hidden onchange="readPDF(this)"></label>
+      <p id="pdfStatus" class="text-xs text-pink-300 mt-2">No PDF yet.</p>
+      <div class="mt-3"><p class="text-xs text-zinc-400">PDF Mode:</p><div class="flex gap-2 mt-1 flex-wrap"><button onclick="setPdfMode('whole')" id="pdfModeWhole" class="filter-btn active bg-white/10 px-3 py-1.5 rounded-full text-xs">📄 Whole PDF</button><button onclick="setPdfMode('part')" id="pdfModePart" class="filter-btn bg-white/10 px-3 py-1.5 rounded-full text-xs">🧩 Part By Part</button></div></div>
+      <div id="pdfPartsBox" class="hidden mt-3"><p class="text-xs text-zinc-400">Select Part:</p><div id="pdfPartsList" class="flex gap-2 flex-wrap mt-1"></div><p class="text-xs text-zinc-400 mt-2">Part <span id="pdfPartNo">1</span> / <span id="pdfPartTotal">1</span></p><div class="flex gap-2 mt-1"><button onclick="prevPdfPart()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">← Prev Part</button><button onclick="nextPdfPart()" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">Next Part →</button></div></div>
+      <div id="pdfActions" class="hidden gap-2 mt-3 flex-wrap"><button onclick="explainPDF('easy')" class="bg-pink-600 px-3 py-2 rounded-full text-xs">✨ Easy Explain</button><button onclick="explainPDF('points')" class="bg-purple-600 px-3 py-2 rounded-full text-xs">📝 Key Points</button><button onclick="explainPDF('quiz')" class="bg-white/10 px-3 py-2 rounded-full text-xs">🎯 Make Quiz</button><button onclick="explainPDF('mock')" class="bg-green-600 px-3 py-2 rounded-full text-xs">📝 Make Mock From PDF</button><button onclick="explainPDF('plan')" class="bg-yellow-600 px-3 py-2 rounded-full text-xs">📅 Study Plan</button></div>
+      <div class="mt-4"><p class="text-xs text-zinc-400 mb-2">Or paste text:</p><textarea id="pdfPaste" rows="3" placeholder="Paste any paragraph here..." class="w-full bg-black/40 rounded-xl px-3 py-2 text-sm outline-none border border-white/10"></textarea><button onclick="usePastedText()" class="bg-white/10 px-4 py-2 rounded-full text-xs mt-2">Use This Text →</button></div>
+    </div>
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold">📖 Priya Explanation - <span id="pdfExplainTitle">Whole PDF</span></h3>
+      <div id="pdfOutput" class="mt-3 text-sm space-y-2 max-h-[420px] overflow-y-auto">Upload a PDF to see explanation here.</div>
+      <div class="flex gap-2 mt-3 flex-wrap"><button onclick="speakPDF()" class="bg-white/10 px-3 py-2 rounded-full text-xs">🔊 Listen</button><button onclick="explainPDF('quiz')" class="bg-white/10 px-3 py-2 rounded-full text-xs">Make Quiz From This</button><button onclick="createMockFromPDF()" class="grad px-3 py-2 rounded-full text-xs font-bold">Start Mock From PDF →</button></div>
+      <div id="pdfMockBox" class="mt-4 hidden"></div>
+    </div>
+  </div>
+</section>
+ <!-- CALENDAR + TASKS + REMINDERS -->
+<section id="tab-calendar" class="hidden">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold text-lg">📅 Calendar + Task + Reminder</h3>
+      <p class="text-sm text-zinc-400">Add task, pick date and time, Priya reminds you with sound + notification.</p>
+      <div class="space-y-2 mt-4">
+        <input id="taskTitle" placeholder="Task Title - Example: GATE Mock Test" class="w-full bg-black/40 rounded-xl px-3 py-2 text-sm outline-none border border-white/10">
+        <textarea id="taskDesc" rows="2" placeholder="Details..." class="w-full bg-black/40 rounded-xl px-3 py-2 text-sm outline-none border border-white/10"></textarea>
+        <div class="grid grid-cols-2 gap-2">
+          <input id="taskDate" type="date" class="bg-black/40 rounded-xl px-3 py-2 text-sm outline-none">
+          <input id="taskTime" type="time" class="bg-black/40 rounded-xl px-3 py-2 text-sm outline-none">
+        </div>
+        <select id="taskType" class="w-full bg-black/40 rounded-xl px-3 py-2 text-sm">
+          <option value="📚 Study">📚 Study</option>
+          <option value="📝 Mock">📝 Mock Test</option>
+          <option value="🔁 Revision">🔁 Revision</option>
+          <option value="▶ Video">▶ Video</option>
+          <option value="📄 PDF">📄 PDF Reading</option>
+          <option value="🎓 GATE">🎓 GATE</option>
+          <option value="🎓 NET">🎓 UGC NET</option>
+          <option value="⭐ Other">⭐ Other</option>
+        </select>
+        <label class="flex items-center gap-2 text-sm"><input id="taskRemind" type="checkbox" checked class="accent-pink-500"> Remind me with notification + sound</label>
+        <button onclick="addTask()" class="grad w-full py-2 rounded-full text-sm font-bold">+ Add Task To Calendar</button>
+        <button onclick="requestNotify()" class="bg-white/10 w-full py-2 rounded-full text-xs">🔔 Allow Notifications</button>
+        <button onclick="addSampleWeekPlan()" class="bg-purple-600 w-full py-2 rounded-full text-xs font-bold">✨ Auto Create 7 Day Study Plan</button>
+      </div>
+    </div>
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold">📋 My Calendar</h3>
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <input id="calendarFilterDate" type="date" onchange="renderTasks()" class="bg-black/40 rounded-xl px-3 py-2 text-sm">
+        <button onclick="document.getElementById('calendarFilterDate').value=''; renderTasks()" class="bg-white/10 px-3 py-2 rounded-full text-xs">Show All</button>
+        <button onclick="clearDoneTasks()" class="bg-white/10 px-3 py-2 rounded-full text-xs">Clear Done</button>
+      </div>
+      <div id="taskList" class="mt-4 space-y-3 max-h-[420px] overflow-y-auto"></div>
+      <p class="text-xs text-zinc-400 mt-3">Priya checks reminders every 30 seconds. Keep this tab open for reminder sound.</p>
+    </div>
+  </div>
+  <div class="card rounded-3xl p-5 mt-4"><h3 class="font-bold">📅 This Week Plan</h3><div id="weekPlan" class="grid md:grid-cols-7 gap-2 mt-3 text-center text-sm"></div></div>
+</section>
+
+<!-- BOOKS - MOTIVATION + STORY + STUDY -->
+<section id="tab-books" class="hidden">
+  <div class="flex gap-2 flex-wrap mb-4">
+    <button onclick="setBookFilter('all')" class="filter-btn active bg-white/10 px-4 py-2 rounded-full text-sm" data-book="all">All Books</button>
+    <button onclick="setBookFilter('motivation')" class="filter-btn bg-white/10 px-4 py-2 rounded-full text-sm" data-book="motivation">💪 Motivation</button>
+    <button onclick="setBookFilter('story')" class="filter-btn bg-white/10 px-4 py-2 rounded-full text-sm" data-book="story">📖 Story Books</button>
+    <button onclick="setBookFilter('study')" class="filter-btn bg-white/10 px-4 py-2 rounded-full text-sm" data-book="study">📚 Study</button>
+  </div>
+  <div class="grid md:grid-cols-3 gap-4" id="booksGrid"></div>
+  <div id="bookReader" class="hidden card rounded-3xl p-5 mt-4">
+    <div class="flex justify-between"><h3 id="bookTitle" class="font-black text-lg"></h3><button onclick="closeBook()" class="bg-white/10 w-8 h-8 rounded-full">✕</button></div>
+    <p id="bookAuthor" class="text-xs text-zinc-400"></p>
+    <div id="bookContent" class="book-card mt-4 text-[15px] leading-relaxed max-h-[420px] overflow-y-auto"></div>
+    <div class="flex gap-2 mt-4 flex-wrap">
+      <button onclick="speakBook()" class="bg-white/10 px-4 py-2 rounded-full text-xs">🔊 Listen To Book</button>
+      <button onclick="bookQuiz()" class="grad px-4 py-2 rounded-full text-xs font-bold">Quiz From Book →</button>
+      <button onclick="addBookTask()" class="bg-purple-600 px-4 py-2 rounded-full text-xs">📅 Add To Calendar - Read Daily</button>
+    </div>
+  </div>
+</section>
+
+<!-- MUSIC - OFFLINE + ONLINE -->
+<section id="tab-music" class="hidden">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold text-lg">🎵 Music - Offline + Online</h3>
+      <p class="text-sm text-zinc-400">Offline: Your own files. Online: Free sample streams. Priya lowers music while speaking.</p>
+      <div class="flex gap-2 mt-4 flex-wrap">
+        <button onclick="prevSong()" class="bg-white/10 w-10 h-10 rounded-full">⏮</button>
+        <button onclick="togglePlay()" id="playBtn" class="bg-cyan-400 text-black px-6 py-2 rounded-full text-sm font-bold">▶ Play</button>
+        <button onclick="nextSong()" class="bg-white/10 w-10 h-10 rounded-full">⏭</button>
+        <button onclick="shuffleSongs()" class="bg-white/10 px-3 py-2 rounded-full text-xs">🔀 Shuffle</button>
+        <button onclick="playOnlineSample()" class="bg-purple-600 px-3 py-2 rounded-full text-xs">🌐 Online Sample</button>
+      </div>
+      <div class="flex items-center gap-2 mt-4"><span class="text-xs">Volume</span><input id="volumeSlider" type="range" min="0" max="100" value="70" oninput="setVolume(this.value)" class="flex-1 accent-pink-500"><span class="text-xs" id="volumeLabel">70%</span></div>
+      <label class="block mt-4 text-center bg-white/10 py-4 rounded-2xl cursor-pointer text-sm">📁 Add Offline Songs <input type="file" accept="audio/*" multiple hidden onchange="addSongs(this)"></label>
+      <p class="text-xs text-zinc-400 mt-2">Supports mp3, wav, m4a. Files stay in your browser, not uploaded.</p>
+      <p class="font-bold mt-4 text-sm">Now Playing: <span id="nowPlayingLabel2">No song playing</span></p>
+      <div class="w-full bg-white/10 rounded-full h-2 mt-2 overflow-hidden"><div id="musicProgress" class="bg-pink-500 h-2" style="width:0%"></div></div>
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <button onclick="setStudyMode('focus')" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">🎯 Focus Mode - Low Volume</button>
+        <button onclick="setStudyMode('relax')" class="bg-white/10 px-3 py-1.5 rounded-full text-xs">😌 Relax Mode</button>
+      </div>
+    </div>
+    <div class="card rounded-3xl p-5">
+      <h3 class="font-bold">🎶 Playlist</h3>
+      <div class="flex gap-2 mt-3">
+        <button onclick="setMusicFilter('all')" class="filter-btn active bg-white/10 px-3 py-1.5 rounded-full text-xs" data-music="all">All</button>
+        <button onclick="setMusicFilter('offline')" class="filter-btn bg-white/10 px-3 py-1.5 rounded-full text-xs" data-music="offline">Offline</button>
+        <button onclick="setMusicFilter('online')" class="filter-btn bg-white/10 px-3 py-1.5 rounded-full text-xs" data-music="online">Online</button>
+      </div>
+      <div id="songList" class="mt-3 space-y-1 max-h-[380px] overflow-y-auto text-sm"></div>
+    </div>
+  </div>
+</section>
+  <!-- TEACHER DASHBOARD - CLASS-WIDE GAPS -->
+<section id="tab-teacher" class="hidden">
+  <div class="card rounded-3xl p-5">
+    <div class="flex justify-between flex-wrap gap-2">
+      <div><h3 class="font-bold text-lg">👩‍🏫 Teacher Dashboard - Class 10 Physics</h3><p class="text-sm text-zinc-400">Class-wide gaps, common misconceptions, at-risk students, next lesson suggestion.</p></div>
+      <button onclick="switchTeacherView()" class="bg-white/10 px-4 py-2 rounded-full text-xs">Switch View: <span id="teacherViewLabel">Class View</span></button>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-4 text-center">
+      <div class="bg-black/30 rounded-xl p-3"><p class="font-black text-xl" id="classAvg">62%</p><p class="text-xs text-zinc-400">Class Avg Mastery</p></div>
+      <div class="bg-black/30 rounded-xl p-3"><p class="font-black text-xl" id="classAtRisk">2</p><p class="text-xs text-zinc-400">At Risk Students</p></div>
+      <div class="bg-black/30 rounded-xl p-3"><p class="font-black text-xl" id="classTopGap">Mirror Formula</p><p class="text-xs text-zinc-400">Biggest Gap</p></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-4">
+      <div><h4 class="font-bold">📉 Class-Wide Gaps - Concepts To Re-Teach</h4><div id="teacherGaps" class="mt-2 space-y-2"></div></div>
+      <div><h4 class="font-bold">🧠 Top Misconceptions In Class</h4><div id="teacherMisconceptions" class="mt-2 space-y-2"></div></div>
+    </div>
+    <div class="mt-4"><h4 class="font-bold">👥 Students</h4><div id="teacherStudents" class="mt-2 space-y-2"></div></div>
+    <div class="mt-4 bg-black/30 rounded-xl p-3"><p class="font-bold">🎯 Priya Suggests Next Lesson For Teacher:</p><p id="teacherSuggestion" class="text-sm text-zinc-300 mt-1">Re-teach Mirror Formula with sign convention practice. 60% of class is below 40%.</p></div>
+    <div class="flex gap-2 mt-4 flex-wrap">
+      <button onclick="exportTeacherReport()" class="grad px-4 py-2 rounded-full text-sm font-bold">Export Class Report →</button>
+      <button onclick="addTeacherDemoData()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Load Demo Class Data</button>
+      <button onclick="clearTeacherData()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Clear Demo Data</button>
+    </div>
+  </div>
+  <div class="card rounded-3xl p-5 mt-4"><h3 class="font-bold">📊 How Teacher Dashboard Works</h3><p class="text-sm text-zinc-400 mt-2">Priya collects learner models from all students. It finds average mastery per concept. If average is below 50%, that concept is a gap. If many students share same misconception type, Priya shows it as class misconception. Teacher can then re-teach that one concept and fix the whole class faster.</p></div>
+</section>
+
+<!-- SPACED REPETITION - REVIEW -->
+<section id="tab-review" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto">
+    <h3 class="font-bold text-lg">🔁 Spaced Repetition - Do Not Forget</h3>
+    <p class="text-sm text-zinc-400">Priya brings back mistakes at the right time. Wrong = 10 min, then 1 day, then 3 days, then 7 days, then 14 days.</p>
+    <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+      <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="reviewDueCount">0</p><p class="text-[11px] text-zinc-400">Due Now</p></div>
+      <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="reviewTotalCount">0</p><p class="text-[11px] text-zinc-400">Total In Review</p></div>
+      <div class="bg-black/30 rounded-xl p-2"><p class="font-black" id="reviewMasteredCount">0</p><p class="text-[11px] text-zinc-400">Mastered</p></div>
+    </div>
+    <div class="flex gap-2 mt-3 flex-wrap">
+      <button onclick="startReviewQuiz()" class="grad px-4 py-2 rounded-full text-sm font-bold">Start Review Quiz - Due Items</button>
+      <button onclick="clearReview()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Clear All</button>
+      <button onclick="renderReview()" class="bg-white/10 px-4 py-2 rounded-full text-sm">Refresh</button>
+    </div>
+    <div id="reviewBox" class="mt-4 space-y-3"></div>
+  </div>
+</section>
+
+<!-- CHAT - ASK PRIYA -->
+<section id="tab-chat" class="hidden">
+  <div class="card rounded-3xl p-5 max-w-3xl mx-auto flex flex-col h-[600px]">
+    <h3 class="font-bold">💬 Ask Priya Anything - <span id="chatModelName">TUTOR MODEL</span></h3>
+    <div class="flex gap-2 mt-2 flex-wrap">
+      <button onclick="switchModel('tutor')" class="bg-pink-600 px-3 py-1 rounded-full text-xs">Tutor Model</button>
+      <button onclick="switchModel('companion')" class="bg-purple-600 px-3 py-1 rounded-full text-xs">Companion Model</button>
+      <button onclick="speakProjectIntro()" class="bg-cyan-500 text-black px-3 py-1 rounded-full text-xs font-bold">▶ Project Intro</button>
+      <button onclick="clearChat()" class="bg-white/10 px-3 py-1 rounded-full text-xs">Clear Chat</button>
+    </div>
+    <div class="flex gap-2 mt-2 flex-wrap">
+      <button onclick="quickAsk('Explain mirror formula simply')" class="bg-white/10 px-3 py-1 rounded-full text-xs">Mirror Formula?</button>
+      <button onclick="quickAsk('Explain GATE DBMS')" class="bg-white/10 px-3 py-1 rounded-full text-xs">GATE DBMS?</button>
+      <button onclick="quickAsk('Explain UGC NET Paper 1')" class="bg-white/10 px-3 py-1 rounded-full text-xs">UGC NET?</button>
+      <button onclick="quickAsk('Give me motivation')" class="bg-white/10 px-3 py-1 rounded-full text-xs">Motivation</button>
+    </div>
+    <div id="chatBox" class="flex-1 overflow-y-auto space-y-2 mt-3 pr-1"></div>
+    <div class="flex gap-2 mt-3">
+      <button onclick="toggleMic()" class="bg-white/10 w-11 h-11 rounded-full shrink-0">🎤</button>
+      <input id="chatInput" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Ask a doubt, e.g. Explain mirror formula simply" class="flex-1 bg-black/40 rounded-full px-4 py-2 text-sm outline-none border border-white/10">
+      <button onclick="sendChat()" class="grad w-11 h-11 rounded-full shrink-0">➤</button>
+    </div>
+    <p id="listeningText" class="text-xs text-pink-300 h-4 mt-1"></p>
+    <p class="text-[11px] text-zinc-400">Priya uses ElevenLabs voice when API key is added. Without key, it uses browser voice. Voice auto lowers music.</p>
+  </div>
+</section>
+
+  <div id="diagModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur flex items-center justify-center p-4"><div class="card rounded-3xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"><div class="flex justify-between"><h3 class="font-black text-lg">🎯 Free Diagnostic - 2 Minutes</h3><button onclick="closeDiagnostic()" class="bg-white/10 w-8 h-8 rounded-full">✕</button></div><div id="diagBox" class="mt-4"></div><div id="diagResult" class="hidden mt-4"></div></div></div>
+  <div id="toastBox" class="fixed bottom-20 right-3 z-[60] space-y-2"></div>
+</main>
+
+<script>
+// ===== PART 1 - CORE STATE + NAV + TWO MODELS + ELEVENLABS BASE =====
+let model = JSON.parse(localStorage.getItem('priya_model') || '{}');
+let userName = localStorage.getItem('priya_user') || '';
+let xp = parseInt(localStorage.getItem('priya_xp') || '0');
+let streak = parseInt(localStorage.getItem('priya_streak') || '0');
+let lastDay = localStorage.getItem('priya_last_day') || '';
+let mistakes = JSON.parse(localStorage.getItem('priya_mistakes') || '[]');
+let history = JSON.parse(localStorage.getItem('priya_history') || '[]');
+let lastMock = localStorage.getItem('priya_last_mock') || '';
+let tasks = JSON.parse(localStorage.getItem('priya_tasks') || '[]');
+let gateHistory = JSON.parse(localStorage.getItem('priya_gate_history') || '[]');
+let pdfText = "", pdfName = "", pdfMode = "whole", pdfParts = [], pdfPartIdx = 0, gatePdfText = "";
+let currentTopic = 'light', lastMsg = "", currentModel = localStorage.getItem('priya_active_model') || 'tutor';
+let songs = [], currentSongIdx = -1, isPlaying = false, savedVolume = 0.7;
+
+const ELEVENLABS_API_KEY = "sk_b4a5c53cedf0ecf4c53eebe87bb5d16b25da478808ad35a6";
+const MODEL_CONFIG = {
+  tutor: { name: "Adaptive Tutor", tagline: "Learner Model Active - I adapt to how you learn.", voiceId: "https://elevenlabs.io/voices/06llJPvI62CjqSWOX9Gp", greeting: "Hello! I am Priya, your adaptive tutor. Let us find your weak topic and fix it together." },
+  companion: { name: "Omniverse Companion", tagline: "Omniverse Mode - Chat, Music, Vision, Fun.", voiceId: "https://elevenlabs.io/voices/06llJPvI62CjqSWOX9Gp", greeting: "Hey! Priya is here. Let us chat, play some music, and make learning fun today." }
+};
+const PROJECT_INTRO = "Hello! Meet Priya. Priya Omniverse. Priya is not just an app. Priya is your personal AI tutor, your best friend, and your complete learning universe. First, Priya understands you. Take a two minute diagnostic test. Priya builds your Learner Model. It remembers what you know, what you forget, and where you make mistakes. Then Priya adapts. Two right answers, level up. Two wrong answers, Priya makes it easier, gives a hint, and explains with a story and an example. Second, Priya teaches for school, for GATE, and for UGC NET. Third, Priya reads your PDF. Upload any book. Priya explains the whole PDF, or part by part. And Priya makes a mock test from your PDF. Fourth, Priya shows you videos. Search any topic on YouTube. Watch, then Priya explains the video in simple words. Fifth, Priya plans your day. Add tasks to the calendar. Set reminders. Sixth, Priya relaxes you. Play songs offline or online. Read motivation books and story books. And Priya has two models. Tutor Mode for exams. Companion Mode for fun. This is Priya Omniverse. Learn smarter. Not harder.";
+
+function getModel(t){ if(!model[t]) model[t]={mastery:0,level:1,correct:0,wrong:0,attempts:0}; return model[t]; }
+function saveModel(){ localStorage.setItem('priya_model',JSON.stringify(model)); localStorage.setItem('priya_xp',xp); localStorage.setItem('priya_mistakes',JSON.stringify(mistakes)); localStorage.setItem('priya_history',JSON.stringify(history)); localStorage.setItem('priya_tasks',JSON.stringify(tasks)); localStorage.setItem('priya_gate_history',JSON.stringify(gateHistory)); }
+function updateStreak(){ let today=new Date().toDateString(); if(lastDay!==today){ let diff=lastDay?Math.round((new Date(today)-new Date(lastDay))/86400000):99; if(diff===1) streak++; else streak=1; lastDay=today; localStorage.setItem('priya_last_day',today); localStorage.setItem('priya_streak',streak); } }
+function overallLevel(){ let v=Object.values(model); if(!v.length) return "Beginner"; let avg=v.reduce((a,b)=>a+b.mastery,0)/v.length; if(avg<25) return "Beginner"; if(avg<55) return "Intermediate"; if(avg<80) return "Advanced"; return "Master"; }
+function addXP(n){ xp+=n; localStorage.setItem('priya_xp',xp); }
+function avgMastery(){ let v=Object.values(model); return v.length?Math.round(v.reduce((a,b)=>a+b.mastery,0)/v.length):0; }
+function totalStats(){ let c=Object.values(model).reduce((a,b)=>a+b.correct,0); let w=Object.values(model).reduce((a,b)=>a+b.wrong,0); let t=c+w; return {c,w,t,acc:t?Math.round(c/t*100):0}; }
+function goHome(){ document.getElementById('page-home').classList.remove('hidden'); document.getElementById('page-app').classList.add('hidden'); document.getElementById('topBar').classList.add('hidden'); window.scrollTo(0,0); setActiveNav('home'); }
+function enterApp(tab){ document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-app').classList.remove('hidden'); document.getElementById('topBar').classList.remove('hidden'); showTab(tab||'dashboard',document.querySelector(`[data-tab="${tab||'dashboard'}"]`)); window.scrollTo(0,0); setActiveNav(tab); }
+function setActiveNav(n){ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.nav===n)); }
+function showTab(id,btn){ document.querySelectorAll('#page-app > section').forEach(s=>s.classList.add('hidden')); let el=document.getElementById('tab-'+id); if(el) el.classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); }
+function openProfile(){ let n=prompt("Your name?",userName||""); if(n){ userName=n; localStorage.setItem('priya_user',n); priyaSay(`Great, ${n}! I will remember your progress now.`); } }
+function resetAll(){ if(confirm("Reset all progress?")){ localStorage.clear(); location.reload(); } }
+function showToast(msg){ let box=document.getElementById('toastBox'); let d=document.createElement('div'); d.className="toast bg-pink-600 px-4 py-2 rounded-full text-sm shadow-2xl"; d.textContent=msg; box.appendChild(d); setTimeout(()=>d.remove(),4000); }
+function switchModel(mode){ currentModel=mode; localStorage.setItem('priya_active_model',mode); let cfg=MODEL_CONFIG[mode]; document.getElementById('btnModelA').className="px-3 py-1.5 rounded-full text-[11px] font-bold "+(mode==='tutor'?"bg-pink-600":"bg-white/10"); document.getElementById('btnModelB').className="px-3 py-1.5 rounded-full text-[11px] font-bold "+(mode==='companion'?"bg-purple-600":"bg-white/10"); document.getElementById('modelTagline').textContent=cfg.tagline; let mh=document.getElementById('modelNameHome'); if(mh) mh.textContent=mode==='tutor'?"TUTOR MODEL":"COMPANION MODEL"; priyaSay(cfg.greeting); }
+function speakProjectIntro(){ speakWithElevenLabs(PROJECT_INTRO, MODEL_CONFIG[currentModel].voiceId); showToast("Playing Project Intro - ElevenLabs Voice"); }
+let currentAudio=null;
+async function speakWithElevenLabs(text,voiceId){ if(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY.includes("PASTE")){ speakText(text); return; } try{ if(currentAudio) currentAudio.pause(); let res=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,{method:"POST",headers:{"xi-api-key":ELEVENLABS_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({text:text,model_id:"eleven_multilingual_v2",voice_settings:{stability:0.45,similarity_boost:0.75,style:0.4,use_speaker_boost:true}})}); let blob=await res.blob(); let url=URL.createObjectURL(blob); currentAudio=new Audio(url); currentAudio.play(); }catch(e){ speakText(text); } }
+function speakText(text){ try{ speechSynthesis.cancel(); let u=new SpeechSynthesisUtterance(text); u.lang='en-IN'; u.rate=1; u.pitch=1.1; speechSynthesis.speak(u); }catch(e){} }
+function speakLast(){ if(lastMsg) speakWithElevenLabs(lastMsg, MODEL_CONFIG[currentModel].voiceId); }
+function getTutorReply(text){ let t=text.toLowerCase(); if(t.includes('hello')||t.includes('hi')) return `Hello ${userName||'learner'}! I am Priya. Tell me which topic is hard.`; return `Good question! Tell me the topic and I will explain simply with an example.`; }
+function priyaSay(text){ lastMsg=text; let b=document.getElementById('priyaSpeakingHome'); if(b) b.textContent=text.slice(0,180); let a=document.getElementById('priyaSpeaking'); if(a) a.textContent=text.slice(0,120); speakWithElevenLabs(text, MODEL_CONFIG[currentModel].voiceId); }
+function tickClock(){ let d=new Date(); let s=String(d.getHours()).padStart(2,'0')+":"+String(d.getMinutes()).padStart(2,'0')+":"+String(d.getSeconds()).padStart(2,'0'); let a=document.getElementById('clockTop'); if(a) a.textContent=s; let b=document.getElementById('homeClock'); if(b) b.textContent=s; }
+setInterval(tickClock,1000);
+// Placeholder functions - will be replaced in Part 2 to 6
+function startFreeDiagnostic(){ alert("Diagnostic will be added in Part 2"); }
+function renderHome(){}
+function prevSong(){}
+function nextSong(){}
+function togglePlay(){}
+function playOnlineSample(){}
+function closeDiagnostic(){ document.getElementById('diagModal').classList.add('hidden'); }
+window.onload=()=>{ tickClock(); };
+</script>
+<script>
+// ===== PART 2 - CONCEPT GRAPH, LEARNER MODEL, DIAGNOSTIC =====
+
+// --- TOPICS FOR HOMEPAGE + DASHBOARD ---
+const TOPICS = {
+  light: { name: "Light - Basics", icon: "💡", desc: "Light, Reflection basics" },
+  reflection: { name: "Reflection", icon: "🪞", desc: "Reflection, Mirror basics" },
+  mirror: { name: "Mirror Formula", icon: "🔍", desc: "1/v + 1/u = 1/f" },
+  refraction: { name: "Refraction", icon: "🌈", desc: "Bending of light" },
+  lens: { name: "Lens Formula", icon: "👓", desc: "1/v - 1/u = 1/f" },
+  electricity: { name: "Electricity - Basics", icon: "🔋", desc: "Charge, Current basics" },
+  current: { name: "Current + Potential", icon: "⚡", desc: "V, I, Potential Difference" },
+  resistance: { name: "Resistance + Ohms Law", icon: "🔌", desc: "V = IR" },
+  circuits: { name: "Series / Parallel", icon: "🔗", desc: "Series vs Parallel" },
+  power: { name: "Electric Power", icon: "💡", desc: "P = VI" }
+};
+
+// --- CONCEPT GRAPH - CLASS 10 PHYSICS ---
+const CONCEPT_GRAPH = {
+  light: { name: "Light - Basics", level: 1, prereq: [] },
+  reflection: { name: "Reflection", level: 2, prereq: ["light"] },
+  mirror: { name: "Mirror Formula", level: 3, prereq: ["reflection"] },
+  refraction: { name: "Refraction", level: 3, prereq: ["light"] },
+  lens: { name: "Lens Formula", level: 4, prereq: ["refraction", "mirror"] },
+  electricity: { name: "Electricity - Basics", level: 1, prereq: [] },
+  current: { name: "Current + Potential", level: 2, prereq: ["electricity"] },
+  resistance: { name: "Resistance + Ohms Law", level: 3, prereq: ["current"] },
+  circuits: { name: "Series / Parallel", level: 3, prereq: ["resistance"] },
+  power: { name: "Electric Power", level: 4, prereq: ["circuits"] }
+};
+
+function isUnlocked(id) {
+  return CONCEPT_GRAPH[id].prereq.every(p => getModel(p).mastery >= 50);
+}
+
+function renderConceptGraph() {
+  let box = document.getElementById('conceptGraph');
+  if (!box) return;
+  box.innerHTML = Object.keys(CONCEPT_GRAPH).map(id => {
+    let c = CONCEPT_GRAPH[id];
+    let m = getModel(id);
+    let locked = !isUnlocked(id);
+    let bar = `<div class="mastery-bar mt-1"><div class="mastery-fill" style="width:${m.mastery}%"></div></div>`;
+    return `<div class="flex justify-between gap-3 bg-black/30 rounded-xl px-3 py-2 ${locked ? 'opacity-50' : ''}">
+      <div class="flex-1"><p class="font-bold text-sm">${locked ? '🔒' : '✅'} ${c.name} - Level ${c.level}</p><p class="text-[11px] text-zinc-400">Prereq: ${c.prereq.length ? c.prereq.join(', ') : 'None'} • Mastery ${m.mastery}% • Attempts ${m.attempts}</p>${bar}</div>
+      <button onclick="selectTopic('${id}'); showTab('learn',document.querySelector('[data-tab=learn]'))" class="bg-white/10 px-3 py-1 rounded-full text-xs h-fit shrink-0" ${locked ? 'disabled' : ''}>${locked ? 'Locked' : 'Learn →'}</button>
+    </div>`;
+  }).join('');
+}
+
+// --- QUESTION BANK FOR DIAGNOSTIC + PRACTICE ---
+const QUESTIONS = {
+  light: [
+    { q: "Light travels in what kind of path?", opts: ["Curved", "Straight line", "Zigzag", "Circle"], ans: 1, level: 1, hint: "Light never bends by itself.", explain: "Light travels in a straight line." },
+    { q: "What is the speed of light in vacuum?", opts: ["3 x 10^6 m/s", "3 x 10^8 m/s", "3 x 10^5 m/s", "300 m/s"], ans: 1, level: 2, hint: "Very fast.", explain: "Speed of light is 3 x 10^8 m/s." }
+  ],
+  reflection: [
+    { q: "Angle of incidence = ?", opts: ["Angle of refraction", "Angle of reflection", "90 degrees", "0 degrees"], ans: 1, level: 1, hint: "First law of reflection.", explain: "Angle of incidence = Angle of reflection." },
+    { q: "Image in plane mirror is?", opts: ["Real, Inverted", "Virtual, Erect, Same Size", "Real, Erect", "Virtual, Small"], ans: 1, level: 2, hint: "Mirror does not zoom.", explain: "Plane mirror gives virtual, erect, same size image." }
+  ],
+  mirror: [
+    { q: "Mirror formula is?", opts: ["1/v + 1/u = 1/f", "1/v - 1/u = 1/f", "v + u = f", "1/v = 1/u"], ans: 0, level: 2, hint: "For mirror, plus.", explain: "Mirror: 1/v + 1/u = 1/f." },
+    { q: "Object at 20cm, f = 10cm for concave mirror, find v? (u = -20)", opts: ["-20 cm", "-10 cm", "20 cm", "10 cm"], ans: 0, level: 3, hint: "Use u = -20, f = -10.", explain: "1/v = 1/f - 1/u = -1/10 + 1/20 = -1/20, so v = -20 cm." }
+  ],
+  refraction: [
+    { q: "When light goes from rarer to denser, it bends?", opts: ["Away from normal", "Towards normal", "No bend", "Backwards"], ans: 1, level: 2, hint: "Denser slows it.", explain: "Rarer to denser bends towards normal." },
+    { q: "Refractive index = ?", opts: ["Speed in medium / Speed in vacuum", "Speed in vacuum / Speed in medium", "Speed x Medium", "1 / Speed"], ans: 1, level: 3, hint: "Vacuum is fastest.", explain: "n = Speed in vacuum / Speed in medium." }
+  ],
+  lens: [
+    { q: "Lens formula is?", opts: ["1/v + 1/u = 1/f", "1/v - 1/u = 1/f", "v - u = f", "1/f = 1/v"], ans: 1, level: 2, hint: "For lens, minus.", explain: "Lens: 1/v - 1/u = 1/f." },
+    { q: "Power of lens with f = 50cm?", opts: ["+2 D", "-2 D", "+0.5 D", "-0.5 D"], ans: 0, level: 3, hint: "P = 100 / f in cm.", explain: "P = 100/50 = +2 D." }
+  ],
+  electricity: [
+    { q: "SI unit of charge?", opts: ["Ampere", "Volt", "Coulomb", "Ohm"], ans: 2, level: 1, hint: "Q unit.", explain: "Charge unit is Coulomb." },
+    { q: "Electric current is flow of?", opts: ["Protons", "Neutrons", "Electrons", "Photons"], ans: 2, level: 2, hint: "Negative charge moves.", explain: "Current is flow of electrons." }
+  ],
+  current: [
+    { q: "Potential difference is measured by?", opts: ["Ammeter", "Voltmeter", "Galvanometer", "Ohmmeter"], ans: 1, level: 1, hint: "Volt = Voltmeter.", explain: "Voltmeter measures potential difference." },
+    { q: "1 Ampere = ?", opts: ["1 Coulomb / 1 Second", "1 Volt / 1 Ohm", "1 Joule / 1 Second", "1 Coulomb x 1 Second"], ans: 0, level: 2, hint: "I = Q / t.", explain: "I = Q / t, so 1A = 1C / 1s." }
+  ],
+  resistance: [
+    { q: "Ohms Law is?", opts: ["V = IR", "V = I / R", "V = R / I", "V = I + R"], ans: 0, level: 2, hint: "V, I, R triangle.", explain: "V = IR." },
+    { q: "If V = 12V, I = 2A, R = ?", opts: ["24 Ohm", "6 Ohm", "10 Ohm", "14 Ohm"], ans: 1, level: 3, hint: "R = V / I.", explain: "R = 12 / 2 = 6 Ohm." }
+  ],
+  circuits: [
+    { q: "In series, what is same?", opts: ["Voltage", "Current", "Resistance", "Power"], ans: 1, level: 2, hint: "One path.", explain: "In series, current is same." },
+    { q: "In parallel, what is same?", opts: ["Current", "Voltage", "Resistance", "Charge"], ans: 1, level: 2, hint: "Same two points.", explain: "In parallel, voltage is same." }
+  ],
+  power: [
+    { q: "Electric Power P = ?", opts: ["V x I", "V / I", "I / V", "V + I"], ans: 0, level: 2, hint: "P = VI.", explain: "P = V x I." },
+    { q: "Bulb 100W, 220V, Current = ?", opts: ["0.45 A", "2.2 A", "220 A", "100 A"], ans: 0, level: 3, hint: "I = P / V.", explain: "I = 100 / 220 = 0.45 A." }
+  ]
+};
+
+// --- LEARNER MODEL ENGINE ---
+// This is the core. Called after every answer.
+function updateLearnerModel(topic, wasCorrect, timeTakenSec, misconceptionType) {
+  let m = getModel(topic);
+  m.attempts++;
+  m.lastStudied = Date.now();
+  if (wasCorrect) {
+    m.correct++;
+    if (timeTakenSec < 15) m.mastery = Math.min(100, m.mastery + 8); // fast + correct
+    else m.mastery = Math.min(100, m.mastery + 4); // slow + correct
+  } else {
+    m.wrong++;
+    m.mastery = Math.max(0, m.mastery - 3);
+    if (misconceptionType) {
+      m.lastMisconception = misconceptionType;
+    }
+  }
+  // Level logic - 2 in a row logic handled in practice, but also auto level here
+  if (m.mastery >= 70 && m.level < 4) m.level = Math.min(4, m.level + 1);
+  if (m.mastery < 20 && m.level > 1) m.level = Math.max(1, m.level - 1);
+  history.push({ topic, acc: Math.round(m.correct / Math.max(1, m.correct + m.wrong) * 100), correct: wasCorrect });
+  saveModel();
+  return m;
+}
+
+// --- RENDER HOME + DASHBOARD ---
+function renderHome() {
+  updateStreak();
+  let s = totalStats();
+  [['streakValTop', streak], ['xpValTop', xp]].forEach(([id, v]) => { let el = document.getElementById(id); if (el) el.textContent = v; });
+  if (userName) { let b = document.getElementById('userNameLabelTop'); if (b) b.textContent = userName; let c = document.getElementById('helloName'); if (c) c.textContent = userName; }
+  let ha = document.getElementById('homeAccuracy'); if (ha) ha.textContent = s.acc + "%";
+  let hq = document.getElementById('homeQuestions'); if (hq) hq.textContent = s.t;
+  let hm = document.getElementById('homeMastery'); if (hm) hm.textContent = avgMastery() + "%";
+  let ht = document.getElementById('homeTasksCount'); if (ht) ht.textContent = tasks.filter(t => !t.done).length;
+  let hl = document.getElementById('homeLevel'); if (hl) hl.textContent = overallLevel() + " • Level " + Math.max(1, Math.round(avgMastery() / 25) + 1);
+  let hb = document.getElementById('homeLevelBar'); if (hb) hb.style.width = Math.max(5, avgMastery()) + "%";
+  let hp = document.getElementById('homeLevelPct'); if (hp) hp.textContent = avgMastery() + "% to Next Level";
+  let lb = document.getElementById('homeLevelBadge'); if (lb) lb.textContent = overallLevel();
+  let xb = document.getElementById('homeXpBadge'); if (xb) xb.textContent = xp + " XP";
+  let sorted = Object.keys(TOPICS).map(t => ({ t, m: getModel(t) })).sort((a, b) => a.m.mastery - b.m.mastery);
+  let wk = document.getElementById('homeWeakest'); if (wk) wk.textContent = s.t === 0 ? "Start Now" : TOPICS[sorted[0].t].name + " " + sorted[0].m.mastery + "%";
+  let nl = document.getElementById('homeNextLesson'); if (nl) nl.textContent = TOPICS[sorted[0].t].name + " L" + getModel(sorted[0].t).level;
+  let subj = document.getElementById('homeSubjects');
+  if (subj) {
+    subj.innerHTML = Object.keys(TOPICS).map(t => {
+      let m = getModel(t);
+      let locked = !isUnlocked(t);
+      return `<div class="card rounded-3xl p-4 ${locked ? 'opacity-60' : ''}"><p class="text-3xl">${TOPICS[t].icon}</p><h3 class="font-bold mt-2">${TOPICS[t].name}</h3><p class="text-xs text-zinc-400">${TOPICS[t].desc}</p><p class="font-black mt-2">${m.mastery}% • Level ${m.level} ${locked ? '• 🔒 Locked' : ''}</p><div class="mastery-bar mt-2"><div class="mastery-fill" style="width:${m.mastery}%"></div></div><button onclick="selectTopic('${t}'); enterApp('learn')" class="w-full bg-white/10 py-2 rounded-full text-xs mt-3" ${locked ? 'disabled' : ''}>${locked ? 'Locked - Master Prereq' : 'Start →'}</button></div>`;
+    }).join('');
+  }
+  let prev = document.getElementById('homeModelPreview');
+  if (prev) {
+    prev.innerHTML = Object.keys(TOPICS).slice(0, 5).map(t => { let m = getModel(t); return `<div><p class="text-xs flex justify-between"><span>${TOPICS[t].icon} ${TOPICS[t].name}</span><span>${m.mastery}% • L${m.level}</span></p><div class="mastery-bar mt-1"><div class="mastery-fill" style="width:${m.mastery}%"></div></div></div>`; }).join('');
+  }
+  let demo = document.getElementById('homeDemoOpts');
+  if (demo && !demo.dataset.done) {
+    demo.innerHTML = ["-20 cm", "-10 cm", "20 cm", "10 cm"].map((o, i) => `<button onclick="homeDemo(${i},this)" class="opt bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-sm text-left">${o}</button>`).join('');
+  }
+  renderHomeTasks();
+}
+
+function renderHomeTasks() {
+  let box = document.getElementById('homeTasks');
+  if (!box) return;
+  let list = tasks.filter(t => !t.done).slice(0, 3);
+  if (!list.length) box.innerHTML = `<p class="text-zinc-400 text-xs">No tasks today. Add one in Calendar.</p>`;
+  else box.innerHTML = list.map(t => `<div class="bg-black/30 rounded-lg px-3 py-2 flex justify-between"><span>${t.type} ${t.title}</span><span class="text-zinc-400">${t.date} ${t.time || ''}</span></div>`).join('');
+}
+
+function homeDemo(i, el) {
+  let correct = i === 0;
+  document.querySelectorAll('#homeDemoOpts .opt').forEach(b => b.disabled = true);
+  if (correct) {
+    el.classList.add('correct');
+    document.getElementById('homeDemoFeedback').innerHTML = `<span class="text-green-400 font-bold">✓ Correct! v = -20 cm. Next will be harder.</span>`;
+    updateLearnerModel('mirror', true, 10, null);
+    addXP(10);
+  } else {
+    el.classList.add('wrong');
+    document.getElementById('homeDemoFeedback').innerHTML = `<span class="text-red-400 font-bold">✗ Correct is -20 cm. You missed sign convention. u = -20.</span>`;
+    updateLearnerModel('mirror', false, 20, "Sign Convention Error");
+    mistakes.push({ q: "Mirror: Object 20cm, f=10cm, Find v?", correct: "-20 cm", explain: "Use u = -20, f = -10. 1/v = -1/20.", topic: "mirror", misconception: "Sign Convention Error" });
+  }
+  saveModel(); renderDashboard();
+  document.getElementById('homeDemoOpts').dataset.done = "1";
+  setTimeout(() => { document.getElementById('homeDemoOpts').dataset.done = ""; document.getElementById('homeDemoFeedback').textContent = ""; renderHome(); }, 3000);
+}
+
+function renderDashboard() {
+  updateStreak();
+  let sv = document.getElementById('streakVal'); if (sv) sv.textContent = streak;
+  let xv = document.getElementById('xpVal'); if (xv) xv.textContent = xp;
+  let lv = document.getElementById('levelVal'); if (lv) lv.textContent = overallLevel();
+  let s = totalStats();
+  let sa = document.getElementById('statAccuracy'); if (sa) sa.textContent = s.acc + "%";
+  let sq = document.getElementById('statAnswered'); if (sq) sq.textContent = s.t;
+  let sm = document.getElementById('statMastery'); if (sm) sm.textContent = avgMastery() + "%";
+  let gb = document.getElementById('goalBar'); if (gb) gb.style.width = Math.min(100, s.t * 10) + "%";
+  let ng = document.getElementById('nextGoalText'); if (ng) ng.textContent = s.t >= 10 ? "Goal reached! Next: 20" : `Complete ${10 - s.t} more`;
+  let grid = document.getElementById('masteryGrid'); if (!grid) return;
+  grid.innerHTML = "";
+  Object.keys(TOPICS).forEach(t => {
+    let m = getModel(t);
+    grid.innerHTML += `<div class="card rounded-2xl p-4"><div class="flex justify-between"><p class="font-bold">${TOPICS[t].icon} ${TOPICS[t].name}</p><span class="text-xs bg-white/10 px-2 py-1 rounded-full">Level ${m.level} ${isUnlocked(t) ? '' : '• 🔒'}</span></div><p class="text-2xl font-black mt-2">${m.mastery}%</p><div class="mastery-bar mt-2"><div class="mastery-fill" style="width:${m.mastery}%"></div></div><p class="text-[11px] text-zinc-400 mt-2">✓ ${m.correct} • ✗ ${m.wrong} • ${m.attempts} attempts ${m.lastMisconception ? '• ⚠️ ' + m.lastMisconception : ''}</p><button onclick="selectTopic('${t}'); showTab('learn',document.querySelector('[data-tab=learn]'))" class="mt-3 w-full bg-white/10 py-1.5 rounded-full text-xs">Continue →</button></div>`;
+  });
+  let sorted = Object.keys(TOPICS).map(t => ({ t, m: getModel(t) })).sort((a, b) => a.m.mastery - b.m.mastery);
+  let rec = document.getElementById('recommendBox');
+  if (rec) {
+    rec.innerHTML = "";
+    sorted.slice(0, 3).forEach(({ t, m }) => {
+      rec.innerHTML += `<div class="flex justify-between items-center bg-black/30 rounded-xl px-3 py-2"><div><p class="font-bold text-sm">${TOPICS[t].icon} ${TOPICS[t].name} - L${m.level}</p><p class="text-[11px] text-zinc-400">Mastery ${m.mastery}%</p></div><button onclick="selectTopic('${t}'); showTab('practice',document.querySelector('[data-tab=practice]'))" class="grad px-3 py-1 rounded-full text-xs">Practice</button></div>`;
+    });
+  }
+  let mis = document.getElementById('mistakeBox');
+  if (mis) {
+    if (!mistakes.length) mis.innerHTML = `<p>No mistakes yet.</p>`;
+    else mis.innerHTML = mistakes.slice(-5).reverse().map(m => `<div class="bg-black/30 rounded-xl px-3 py-2"><p>❌ ${m.q}</p><p class="text-xs text-green-400">✓ ${m.correct} • ${m.explain} ${m.misconception ? '• ⚠️ ' + m.misconception : ''}</p></div>`).join('');
+  }
+  renderConceptGraph();
+  let ctx = document.getElementById('progressChart');
+  if (ctx) {
+    if (window.myChart) window.myChart.destroy();
+    window.myChart = new Chart(ctx, { type: 'line', data: { labels: history.slice(-7).map((_, i) => 'Q' + (i + 1)), datasets: [{ label: 'Accuracy %', data: history.slice(-7).map(h => h.acc), borderColor: '#ff2d55', backgroundColor: 'rgba(255,45,85,0.2)', fill: true, tension: 0.4 }] }, options: { plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#aaa' } }, y: { ticks: { color: '#aaa' }, min: 0, max: 100 } } } });
+  }
+}
+
+function selectTopic(t) { currentTopic = t; }
+function startAdaptive() {
+  let weakest = Object.keys(TOPICS).map(t => ({ t, m: getModel(t) })).filter(x => isUnlocked(x.t)).sort((a, b) => a.m.mastery - b.m.mastery)[0];
+  if (!weakest) weakest = { t: 'light' };
+  selectTopic(weakest.t);
+  showTab('practice', document.querySelector('[data-tab=practice]'));
+  priyaSay(`Weakest is ${TOPICS[weakest.t].name}. Let us fix it.`);
+}
+
+// --- DIAGNOSTIC ---
+let diagQs = [], diagIdx = 0, diagScoreByTopic = {};
+function startFreeDiagnostic() {
+  let all = [];
+  Object.keys(QUESTIONS).forEach(t => { QUESTIONS[t].slice(0, 1).forEach(q => all.push({ ...q, topic: t })); });
+  diagQs = all.sort(() => Math.random() - .5).slice(0, 6);
+  diagIdx = 0; diagScoreByTopic = {};
+  document.getElementById('diagModal').classList.remove('hidden');
+  document.getElementById('diagResult').classList.add('hidden');
+  renderDiag();
+}
+function closeDiagnostic() { document.getElementById('diagModal').classList.add('hidden'); }
+function renderDiag() {
+  let q = diagQs[diagIdx];
+  document.getElementById('diagBox').innerHTML = `<p class="text-xs text-zinc-400">Question ${diagIdx + 1} / ${diagQs.length} • ${TOPICS[q.topic].name} • Concept Graph Check</p><h3 class="text-lg font-bold mt-2">${q.q}</h3><div class="grid gap-2 mt-3">${q.opts.map((o, i) => `<button onclick="answerDiag(${i},this)" class="opt text-left bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm">${String.fromCharCode(65 + i)}. ${o}</button>`).join('')}</div><p class="text-xs text-zinc-400 mt-3">After this, Priya will set your level for every concept.</p>`;
+}
+function answerDiag(i, el) {
+  let q = diagQs[diagIdx];
+  let correct = i === q.ans;
+  document.querySelectorAll('#diagBox .opt').forEach((b, idx) => { b.disabled = true; if (idx === q.ans) b.classList.add('correct'); if (idx === i && !correct) b.classList.add('wrong'); });
+  if (!diagScoreByTopic[q.topic]) diagScoreByTopic[q.topic] = { c: 0, t: 0 };
+  diagScoreByTopic[q.topic].t++; if (correct) diagScoreByTopic[q.topic].c++;
+  updateLearnerModel(q.topic, correct, 15, correct ? null : "Diagnostic Gap");
+  if (!correct) mistakes.push({ q: q.q, correct: q.opts[q.ans], explain: q.explain, topic: q.topic });
+  saveModel();
+  setTimeout(() => { diagIdx++; if (diagIdx >= diagQs.length) finishDiag(); else renderDiag(); }, 800);
+}
+function finishDiag() {
+  document.getElementById('diagBox').innerHTML = "";
+  let res = document.getElementById('diagResult'); res.classList.remove('hidden');
+  let html = `<div class="text-center"><p class="text-2xl font-black">Diagnostic Complete!</p><p class="text-sm text-zinc-400">Your starting levels are set. Unlocked concepts shown below.</p></div><div class="mt-4 space-y-2">${Object.keys(TOPICS).map(t => { let sc = diagScoreByTopic[t]; let lvl = sc && sc.c >= 1 ? 2 : 1; let mm = getModel(t); mm.level = lvl; saveModel(); return `<div class="bg-black/30 rounded-xl px-3 py-2 flex justify-between text-sm"><span>${TOPICS[t].icon} ${TOPICS[t].name}</span><span>Level ${lvl} • ${mm.mastery}% • ${isUnlocked(t) ? 'Unlocked' : '🔒 Locked'}</span></div>`; }).join('')}</div>`;
+  res.innerHTML = html + `<button onclick="closeDiagnostic(); enterApp('dashboard')" class="grad w-full py-3 rounded-full font-bold mt-4">See My Dashboard →</button><button onclick="closeDiagnostic(); enterApp('learn')" class="bg-white/10 w-full py-2 rounded-full text-sm mt-2">Start Learning</button>`;
+  priyaSay("Diagnostic complete. I have set your levels and unlocked your concept graph.");
+}
+
+// Override Part 1 showTab to call render functions
+const _oldShowTab = showTab;
+showTab = function(id, btn) {
+  document.querySelectorAll('#page-app > section').forEach(s => s.classList.add('hidden'));
+  let el = document.getElementById('tab-' + id);
+  if (el) el.classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'learn' && typeof renderLearn === 'function') renderLearn();
+  if (id === 'practice' && typeof renderPracticeTopicTabs === 'function') renderPracticeTopicTabs();
+};
+
+// Override saveModel to also refresh home/dashboard if exists
+const _oldSave = saveModel;
+saveModel = function() {
+  localStorage.setItem('priya_model', JSON.stringify(model));
+  localStorage.setItem('priya_xp', xp);
+  localStorage.setItem('priya_mistakes', JSON.stringify(mistakes));
+  localStorage.setItem('priya_history', JSON.stringify(history));
+  localStorage.setItem('priya_tasks', JSON.stringify(tasks));
+  localStorage.setItem('priya_gate_history', JSON.stringify(gateHistory));
+  if (document.getElementById('page-home') && !document.getElementById('page-home').classList.contains('hidden')) renderHome();
+};
+
+// Init Part 2
+window.addEventListener('load', () => { renderHome(); renderDashboard(); });
+</script>
+<script>
+// ===== PART 5 - CALENDAR, TASKS, REMINDERS, MUSIC, BOOKS =====
+
+const BOOKS = [
+  { id: 1, type: "motivation", title: "Never Give Up", author: "Priya Collection", cover: "💪", text: "One student failed 3 times. Everyone said stop. But he studied 1 hour extra daily. On the 4th try, he topped GATE. Success is not about talent. It is about not stopping. When you feel tired, remember: Your future self is watching you. Do 3 questions today. Just 3. Tomorrow, do 4. Small steps make big toppers. Your dream is bigger than your fear." },
+  { id: 2, type: "motivation", title: "Focus - The Superpower", author: "Priya Collection", cover: "🎯", text: "Focus is a superpower. Phone off for 25 minutes. One topic only. No multitasking. After 25 minutes, take 5 minutes rest. This is Pomodoro. Top students do not study 10 hours. They study 2 hours with full focus. That beats 10 hours of distracted study. Try it today. One topic. 25 minutes. Full focus." },
+  { id: 3, type: "motivation", title: "Small Wins, Big Results", author: "Priya Collection", cover: "🏆", text: "Do not try to finish full syllabus in one day. Win small. Today: 1 concept. Tomorrow: 1 mock. Day after: 1 revision. After 30 days, you will have 30 wins. That is how confidence is built. Priya tracks every small win for you." },
+  { id: 4, type: "story", title: "The Boy Who Loved Questions", author: "Story Book", cover: "🧒", text: "Once there was a boy named Arjun. He asked 100 questions daily. Teachers were tired. Friends laughed. One day, a big exam came. Arjun knew every answer, because he had asked every question. He topped the school. Moral: Never be shy to ask. Every question makes you smarter. Priya loves questions. Ask Priya anything." },
+  { id: 5, type: "story", title: "Priya And The Magic Library", author: "Story Book", cover: "📚", text: "Priya found a magic library. Every book could talk. One book said: Read me, and I will make you wise. Priya read one page daily. After 100 days, Priya knew 100 new things. Magic is not in books. Magic is in reading daily. Open one book today. Read one page. That is enough." },
+  { id: 6, type: "story", title: "The Mirror That Taught Physics", author: "Story Book", cover: "🪞", text: "Rina looked in a mirror and asked: Why is my image flipped? Her teacher smiled and said: That is physics. Light, reflection, mirror formula. From that day, Rina loved physics. She learned mirror formula by drawing her own face in a mirror. Moral: Physics is everywhere. Look around, ask why, and you will learn faster." },
+  { id: 7, type: "study", title: "How To Crack GATE In 30 Days", author: "Priya Study Guide", cover: "🎓", text: "Day 1-10: Revise core subjects - DBMS, OS, CN, DS. Day 11-20: Practice 50 MCQs daily + Previous Year Papers. Day 21-25: Mock tests, 1 per day. Day 26-28: Review mistakes only. Day 29: Light revision. Day 30: Rest + Confidence. Remember: GATE is not hard. Lack of plan is hard. Follow this plan." },
+  { id: 8, type: "study", title: "UGC NET Paper 1 - Quick Guide", author: "Priya Study Guide", cover: "📝", text: "Paper 1 has 10 units: Teaching, Research, Comprehension, Communication, Reasoning, ICT, Data Interpretation, People and Environment, Higher Education, Logical Reasoning. Strategy: Score high in Teaching, Research, ICT, Reasoning. These are easy and scoring. Practice 20 questions daily from these units." },
+  { id: 9, type: "study", title: "Class 10 Physics - Light + Electricity Master Plan", author: "Priya Study Guide", cover: "💡", text: "Week 1: Light basics, Reflection, Mirror Formula. Week 2: Refraction, Lens Formula, Power of Lens. Week 3: Electricity basics, Current, Resistance, Ohms Law. Week 4: Series Parallel, Power, Mock tests. Daily: 10 questions + 1 video + 1 revision. Use Priya Spaced Review every morning." }
+];
+
+const ONLINE_SONGS = [
+  { name: "Online - Focus Piano (Sample)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", type: "online" },
+  { name: "Online - Calm Study (Sample)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", type: "online" },
+  { name: "Online - Motivation Beat (Sample)", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", type: "online" }
+];
+
+// Init songs with online samples
+if (!songs.length) songs = [...ONLINE_SONGS];
+let musicFilter = 'all', bookFilter = 'all', currentBook = null;
+
+// --- CALENDAR + TASKS + REMINDERS ---
+function requestNotify() {
+  if ("Notification" in window) {
+    Notification.requestPermission().then(p => { showToast("Notification: " + p); });
+  } else showToast("Notifications not supported in this browser.");
+}
+function addTask() {
+  let title = document.getElementById('taskTitle').value.trim();
+  let desc = document.getElementById('taskDesc').value.trim();
+  let date = document.getElementById('taskDate').value;
+  let time = document.getElementById('taskTime').value;
+  let type = document.getElementById('taskType').value;
+  let remind = document.getElementById('taskRemind').checked;
+  if (!title) { alert("Write task title first"); return; }
+  if (!date) { date = new Date().toISOString().slice(0, 10); }
+  tasks.push({ id: Date.now(), title, desc, date, time, type, remind, done: false, notified: false });
+  localStorage.setItem('priya_tasks', JSON.stringify(tasks));
+  document.getElementById('taskTitle').value = "";
+  document.getElementById('taskDesc').value = "";
+  showToast("Task added: " + title);
+  saveModel(); renderTasks(); renderHome();
+  priyaSay(`Task added. ${title} on ${date}. I will remind you.`);
+}
+function addSampleWeekPlan() {
+  let today = new Date();
+  let plans = [
+    { title: "Light - Reflection + Mirror Formula", type: "📚 Study", day: 0 },
+    { title: "Refraction + Lens - Practice 10 Questions", type: "📚 Study", day: 1 },
+    { title: "Electricity - Ohms Law + Practice", type: "📚 Study", day: 2 },
+    { title: "GATE Mock - DBMS + OS", type: "🎓 GATE", day: 3 },
+    { title: "UGC NET Mock - Paper 1", type: "🎓 NET", day: 4 },
+    { title: "Full Mock Test - Class 10 Physics", type: "📝 Mock", day: 5 },
+    { title: "Review All Mistakes + Rest", type: "🔁 Revision", day: 6 }
+  ];
+  plans.forEach(p => {
+    let d = new Date(today); d.setDate(today.getDate() + p.day);
+    let iso = d.toISOString().slice(0, 10);
+    if (!tasks.some(t => t.title === p.title && t.date === iso)) {
+      tasks.push({ id: Date.now() + Math.random(), title: p.title, desc: "Auto created by Priya - 7 Day Plan", date: iso, time: "09:00", type: p.type, remind: true, done: false, notified: false });
+    }
+  });
+  localStorage.setItem('priya_tasks', JSON.stringify(tasks));
+  showToast("7 Day Study Plan added to Calendar");
+  renderTasks(); renderHome();
+  priyaSay("I created a 7 day study plan for you. Check Calendar tab.");
+}
+function renderTasks() {
+  let box = document.getElementById('taskList');
+  if (!box) return;
+  let filter = document.getElementById('calendarFilterDate')?.value || "";
+  let list = tasks.slice().sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
+  if (filter) list = list.filter(t => t.date === filter);
+  if (!list.length) { box.innerHTML = `<p class="text-zinc-400 text-sm">No tasks. Add your first task above or click Auto Create 7 Day Plan.</p>`; }
+  else {
+    box.innerHTML = list.map(t => `<div class="card rounded-2xl p-3 flex justify-between gap-2 ${t.done ? 'opacity-50' : ''}"><div><p class="font-bold ${t.done ? 'line-through' : ''}">${t.type} ${t.title}</p><p class="text-xs text-zinc-400">${t.desc || ""}</p><p class="text-xs text-pink-300 mt-1">📅 ${t.date} ${t.time || ""} ${t.remind ? "• 🔔 Reminder ON" : ""}</p></div><div class="flex flex-col gap-1 shrink-0"><button onclick="toggleTask(${t.id})" class="px-3 py-1 rounded-full text-xs ${t.done ? 'bg-green-600' : 'bg-white/10'}">${t.done ? "✓ Done" : "Mark Done"}</button><button onclick="deleteTask(${t.id})" class="bg-red-600/30 px-3 py-1 rounded-full text-xs">Delete</button></div></div>`).join('');
+  }
+  renderWeekPlan();
+  // Update home tasks count
+  let ht = document.getElementById('homeTasksCount'); if (ht) ht.textContent = tasks.filter(t => !t.done).length;
+  renderHomeTasks();
+}
+function toggleTask(id) {
+  let t = tasks.find(x => x.id === id);
+  if (t) { t.done = !t.done; if (t.done) { addXP(5); showToast("Task done! +5 XP"); } localStorage.setItem('priya_tasks', JSON.stringify(tasks)); renderTasks(); saveModel(); }
+}
+function deleteTask(id) { tasks = tasks.filter(x => x.id !== id); localStorage.setItem('priya_tasks', JSON.stringify(tasks)); renderTasks(); saveModel(); }
+function clearDoneTasks() { tasks = tasks.filter(t => !t.done); localStorage.setItem('priya_tasks', JSON.stringify(tasks)); renderTasks(); saveModel(); }
+function renderWeekPlan() {
+  let box = document.getElementById('weekPlan');
+  if (!box) return;
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  let today = new Date();
+  let html = "";
+  for (let i = 0; i < 7; i++) {
+    let d = new Date(today); d.setDate(today.getDate() + i);
+    let iso = d.toISOString().slice(0, 10);
+    let todays = tasks.filter(t => t.date === iso && !t.done);
+    html += `<div class="bg-black/30 rounded-xl p-2"><p class="font-bold text-xs">${days[d.getDay()]}</p><p class="text-[11px] text-zinc-400">${d.getDate()}</p><p class="text-xs mt-1">${todays.length ? todays.length + " tasks" : "Free"}</p><p class="text-[10px] text-zinc-400">${todays.slice(0, 1).map(t => t.title.slice(0, 20)).join('')}</p></div>`;
+  }
+  box.innerHTML = html;
+}
+function checkReminders() {
+  let now = new Date();
+  let nowStr = now.toISOString().slice(0, 10) + " " + String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0');
+  tasks.forEach(t => {
+    if (t.remind && !t.done && !t.notified) {
+      let taskTime = (t.date + " " + (t.time || "09:00"));
+      if (taskTime <= nowStr) {
+        t.notified = true;
+        localStorage.setItem('priya_tasks', JSON.stringify(tasks));
+        showToast("Reminder: " + t.title + " - " + t.date + " " + (t.time || ""));
+        if ("Notification" in window && Notification.permission === "granted") {
+          try { new Notification("Priya Reminder", { body: t.title + " - " + t.date + " " + (t.time || "") }); } catch (e) { }
+        }
+        speakText("Reminder. " + t.title + ". It is time for your task.");
+      }
+    }
+  });
+}
+setInterval(checkReminders, 30000);
+
+// --- BOOKS ---
+function setBookFilter(f) {
+  bookFilter = f;
+  document.querySelectorAll('[data-book]').forEach(b => b.classList.toggle('active', b.dataset.book === f));
+  renderBooks();
+}
+function renderBooks() {
+  let grid = document.getElementById('booksGrid');
+  if (!grid) return;
+  let list = BOOKS.filter(b => bookFilter === 'all' || b.type === bookFilter);
+  grid.innerHTML = list.map(b => `<div class="card rounded-3xl p-5"><p class="text-4xl">${b.cover}</p><p class="text-[11px] text-zinc-400 mt-2">${b.type.toUpperCase()}</p><h3 class="font-bold mt-1">${b.title}</h3><p class="text-xs text-zinc-400">${b.author}</p><p class="text-xs text-zinc-400 mt-2">${b.text.slice(0, 90)}...</p><button onclick="openBook(${b.id})" class="grad w-full py-2 rounded-full text-xs mt-3 font-bold">Read Book →</button></div>`).join('');
+}
+function openBook(id) {
+  currentBook = BOOKS.find(b => b.id === id);
+  document.getElementById('bookReader').classList.remove('hidden');
+  document.getElementById('bookTitle').textContent = currentBook.cover + " " + currentBook.title;
+  document.getElementById('bookAuthor').textContent = currentBook.author + " • " + currentBook.type;
+  document.getElementById('bookContent').textContent = currentBook.text;
+  document.getElementById('bookReader').scrollIntoView({ behavior: 'smooth' });
+  priyaSay(`Opening book ${currentBook.title}. Enjoy reading.`);
+}
+function closeBook() { document.getElementById('bookReader').classList.add('hidden'); currentBook = null; }
+function speakBook() { if (currentBook) speakText(currentBook.title + ". " + currentBook.text); }
+function bookQuiz() {
+  if (!currentBook) return;
+  document.getElementById('bookContent').innerHTML += `<div class="mt-4 bg-black/30 rounded-xl p-3"><p class="font-bold">Quiz From This Book</p><p>Q1. What was the main lesson of this book?</p><p>Q2. Write one line you will apply today.</p><p>Q3. Explain this book to a friend in 2 lines.</p></div>`;
+}
+function addBookTask() {
+  if (!currentBook) return;
+  let today = new Date().toISOString().slice(0, 10);
+  tasks.push({ id: Date.now(), title: "Read Book: " + currentBook.title, desc: "Read daily - Motivation / Story", date: today, time: "18:00", type: "📖 Books", remind: true, done: false, notified: false });
+  localStorage.setItem('priya_tasks', JSON.stringify(tasks));
+  showToast("Book added to Calendar");
+  renderTasks();
+}
+
+// --- MUSIC - OFFLINE + ONLINE ---
+function addSongs(input) {
+  let files = Array.from(input.files);
+  files.forEach(f => { songs.push({ name: f.name, url: URL.createObjectURL(f), type: "offline" }); });
+  renderSongList();
+  if (currentSongIdx === -1 && songs.length) playSong(0);
+  showToast(files.length + " songs added offline");
+}
+function setMusicFilter(f) {
+  musicFilter = f;
+  document.querySelectorAll('[data-music]').forEach(b => b.classList.toggle('active', b.dataset.music === f));
+  renderSongList();
+}
+function renderSongList() {
+  let box = document.getElementById('songList');
+  let homeBox = document.getElementById('songListHome');
+  let list = songs.filter(s => musicFilter === 'all' || s.type === musicFilter);
+  let html = "";
+  if (!list.length) html = `<p class="text-zinc-500 text-xs">No songs. Add offline files or play online sample.</p>`;
+  else html = list.map(s => { let realIdx = songs.indexOf(s); return `<div onclick="playSong(${realIdx})" class="music-item ${realIdx === currentSongIdx ? 'active' : ''} bg-black/30 rounded-lg px-3 py-2 cursor-pointer flex justify-between"><span class="truncate">${s.name} <span class="text-[10px] text-zinc-400">(${s.type})</span></span><span>${realIdx === currentSongIdx && isPlaying ? '▶' : '...'}</span></div>`; }).join('');
+  if (box) box.innerHTML = html;
+  if (homeBox) homeBox.innerHTML = html;
+  let now2 = document.getElementById('nowPlayingLabel2');
+  if (now2 && currentSongIdx >= 0) now2.textContent = songs[currentSongIdx].name;
+}
+function playSong(i) {
+  currentSongIdx = i;
+  let audio = document.getElementById('audioPlayer');
+  audio.src = songs[i].url;
+  audio.volume = savedVolume;
+  audio.play();
+  isPlaying = true;
+  updatePlayButtons();
+  let n1 = document.getElementById('nowPlayingLabel'); if (n1) n1.textContent = songs[i].name;
+  let n2 = document.getElementById('nowPlayingLabel2'); if (n2) n2.textContent = songs[i].name;
+  renderSongList();
+}
+function playOnlineSample() {
+  let idx = songs.findIndex(s => s.type === 'online');
+  if (idx === -1) { songs.push(...ONLINE_SONGS); idx = songs.findIndex(s => s.type === 'online'); }
+  playSong(idx);
+}
+function togglePlay() {
+  let audio = document.getElementById('audioPlayer');
+  if (currentSongIdx === -1) { if (songs.length) playSong(0); return; }
+  if (isPlaying) { audio.pause(); isPlaying = false; } else { audio.play(); isPlaying = true; }
+  updatePlayButtons(); renderSongList();
+}
+function updatePlayButtons() {
+  let btn = document.getElementById('playBtn'); if (btn) btn.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
+  let hb = document.getElementById('playBtnHome'); if (hb) hb.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
+}
+function nextSong() { if (!songs.length) return; playSong((currentSongIdx + 1) % songs.length); }
+function prevSong() { if (!songs.length) return; playSong((currentSongIdx - 1 + songs.length) % songs.length); }
+function shuffleSongs() { songs = songs.sort(() => Math.random() - .5); renderSongList(); if (songs.length) playSong(0); }
+function setVolume(v) {
+  savedVolume = v / 100;
+  let audio = document.getElementById('audioPlayer'); audio.volume = savedVolume;
+  let lab = document.getElementById('volumeLabel'); if (lab) lab.textContent = v + "%";
+}
+function setStudyMode(mode) {
+  let audio = document.getElementById('audioPlayer');
+  if (mode === 'focus') { savedVolume = 0.3; audio.volume = 0.3; showToast("Focus Mode: Volume 30% - Good for study"); }
+  if (mode === 'relax') { savedVolume = 0.7; audio.volume = 0.7; showToast("Relax Mode: Volume 70%"); }
+  let slider = document.getElementById('volumeSlider'); if (slider) slider.value = savedVolume * 100;
+  let lab = document.getElementById('volumeLabel'); if (lab) lab.textContent = Math.round(savedVolume * 100) + "%";
+}
+document.addEventListener('DOMContentLoaded', () => {
+  let audio = document.getElementById('audioPlayer');
+  if (audio) {
+    audio.addEventListener('timeupdate', () => { if (audio.duration) { let p = document.getElementById('musicProgress'); if (p) p.style.width = (audio.currentTime / audio.duration * 100) + "%"; } });
+    audio.addEventListener('ended', () => { nextSong(); });
+  }
+});
+
+// Update showTab to handle new tabs
+const _oldShowTab5 = showTab;
+showTab = function(id, btn) {
+  document.querySelectorAll('#page-app > section').forEach(s => s.classList.add('hidden'));
+  let el = document.getElementById('tab-' + id);
+  if (el) el.classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'learn') renderLearn();
+  if (id === 'practice') renderPracticeTopicTabs();
+  if (id === 'gate') renderGate();
+  if (id === 'video') renderVideos();
+  if (id === 'review' && typeof renderReview === 'function') renderReview();
+  if (id === 'calendar') renderTasks();
+  if (id === 'books') renderBooks();
+  if (id === 'music') renderSongList();
+  if (id === 'teacher' && typeof renderTeacherDashboard === 'function') renderTeacherDashboard();
+};
+window.addEventListener('load', () => { renderTasks(); renderBooks(); renderSongList(); });
+</script>
+<script>
+// ===== PART 6 FINAL - SPACED REPETITION, TEACHER, CHAT, ELEVENLABS =====
+
+// --- SPACED REPETITION ENGINE ---
+function getReviewList() { return JSON.parse(localStorage.getItem('priya_review') || '[]'); }
+function saveReviewList(list) { localStorage.setItem('priya_review', JSON.stringify(list)); }
+function scheduleNextReview(wasCorrect, currentStreak) {
+  let now = Date.now();
+  if (!wasCorrect) return now + 10 * 60 * 1000; // 10 min
+  if (currentStreak === 1) return now + 1 * 24 * 60 * 60 * 1000; // 1 day
+  if (currentStreak === 2) return now + 3 * 24 * 60 * 60 * 1000; // 3 days
+  if (currentStreak === 3) return now + 7 * 24 * 60 * 60 * 1000; // 7 days
+  return now + 14 * 24 * 60 * 60 * 1000; // 14 days
+}
+function getReviewLabel(nextReview) {
+  let diff = nextReview - Date.now();
+  if (diff <= 0) return "Due Now";
+  if (diff < 60 * 60 * 1000) return "In " + Math.round(diff / 60000) + " min";
+  if (diff < 24 * 60 * 60 * 1000) return "In " + Math.round(diff / 3600000) + " hours";
+  return "In " + Math.round(diff / 86400000) + " days";
+}
+function renderReview() {
+  let box = document.getElementById('reviewBox');
+  if (!box) return;
+  let review = getReviewList();
+  let due = review.filter(r => r.nextReview <= Date.now() && !r.mastered);
+  let mastered = review.filter(r => r.mastered);
+  let dueEl = document.getElementById('reviewDueCount'); if (dueEl) dueEl.textContent = due.length;
+  let totalEl = document.getElementById('reviewTotalCount'); if (totalEl) totalEl.textContent = review.length;
+  let mastEl = document.getElementById('reviewMasteredCount'); if (mastEl) mastEl.textContent = mastered.length;
+
+  // Also show old mistakes list as fallback
+  let html = "";
+  if (review.length) {
+    html += review.slice(-8).reverse().map((r, i) => {
+      let realIdx = review.length - 1 - i;
+      return `<div class="card rounded-2xl p-4 flex justify-between gap-3"><div><p class="font-bold">${r.question || r.q || 'Review Item'}</p><p class="text-sm text-green-400 mt-1">Correct: ${r.correct}</p><p class="text-sm text-zinc-400">Misconception: ${r.misconception || 'General'} • Concept: ${r.concept}</p><p class="text-xs text-pink-300">Next Review: ${getReviewLabel(r.nextReview)} • Streak: ${r.streak || 0}</p></div><div class="flex flex-col gap-1 shrink-0"><button onclick="markReviewCorrect(${realIdx})" class="bg-green-600 px-3 py-1 rounded-full text-xs">✓ I Know It Now</button><button onclick="markReviewWrong(${realIdx})" class="bg-red-600/40 px-3 py-1 rounded-full text-xs">✗ Still Wrong</button><button onclick="deleteReviewItem(${realIdx})" class="bg-white/10 px-3 py-1 rounded-full text-xs">Delete</button></div></div>`;
+    }).join('');
+  }
+  if (mistakes.length) {
+    html += `<p class="font-bold mt-2">Old Mistakes - From Practice / Mock:</p>` + mistakes.slice(-5).reverse().map((m, i) => {
+      let realIdx = mistakes.length - 1 - i;
+      return `<div class="card rounded-2xl p-3 flex justify-between gap-3"><div><p class="font-bold text-sm">${m.q}</p><p class="text-sm text-green-400">Correct: ${m.correct}</p><p class="text-xs text-zinc-400">${m.explain} ${m.misconception ? '• ⚠️ ' + m.misconception : ''}</p></div><button onclick="mistakes.splice(${realIdx},1); saveModel(); renderReview()" class="bg-green-600 px-3 py-1 rounded-full text-xs h-fit">✓ Reviewed</button></div>`;
+    }).join('');
+  }
+  if (!html) html = `<p class="text-zinc-400">No review items yet. Practice more and Priya will build your review list. Wrong answers go to review automatically.</p>`;
+  box.innerHTML = html;
+}
+function markReviewCorrect(idx) {
+  let list = getReviewList();
+  let item = list[idx];
+  if (!item) return;
+  item.streak = (item.streak || 0) + 1;
+  item.nextReview = scheduleNextReview(true, item.streak);
+  if (item.streak >= 4) item.mastered = true;
+  saveReviewList(list);
+  showToast("Good! Next review: " + getReviewLabel(item.nextReview));
+  renderReview();
+}
+function markReviewWrong(idx) {
+  let list = getReviewList();
+  let item = list[idx];
+  if (!item) return;
+  item.streak = 0;
+  item.mastered = false;
+  item.nextReview = scheduleNextReview(false, 0);
+  saveReviewList(list);
+  showToast("No problem. Priya will show this again in 10 minutes.");
+  renderReview();
+}
+function deleteReviewItem(idx) { let list = getReviewList(); list.splice(idx, 1); saveReviewList(list); renderReview(); }
+function clearReview() { localStorage.removeItem('priya_review'); mistakes = []; saveModel(); renderReview(); showToast("Review cleared"); }
+function startReviewQuiz() {
+  let review = getReviewList();
+  let due = review.filter(r => r.nextReview <= Date.now());
+  if (!due.length && !mistakes.length) { alert("No due items. Practice first to create review items."); return; }
+  if (due.length) {
+    let first = due[0];
+    enterApp('practice');
+    startPracticeTopic(first.concept || 'mirror');
+    priyaSay(`Starting review quiz. First: ${first.concept}. This was due for review.`);
+  } else {
+    let m = mistakes[0];
+    enterApp('practice');
+    startPracticeTopic(m.topic || 'mirror');
+    priyaSay("Starting review quiz from your mistakes.");
+  }
+}
+
+// --- TEACHER DASHBOARD ---
+let teacherView = 'class';
+let teacherDemo = JSON.parse(localStorage.getItem('priya_teacher_demo') || 'null');
+function getClassData() {
+  if (teacherDemo) return teacherDemo;
+  // Build class from current user + demo baseline
+  let myAvg = avgMastery();
+  return [
+    { name: "You - " + (userName || "Learner"), mastery: { light: getModel('light').mastery, mirror: getModel('mirror').mastery, circuits: getModel('circuits').mastery, refraction: getModel('refraction').mastery }, misconception: getModel('mirror').lastMisconception || "None", atRisk: myAvg < 35 },
+    { name: "Aarav - Demo", mastery: { light: 80, mirror: 30, circuits: 45, refraction: 60 }, misconception: "Sign Convention Error", atRisk: true },
+    { name: "Sana - Demo", mastery: { light: 70, mirror: 25, circuits: 60, refraction: 55 }, misconception: "Sign Convention Error", atRisk: true },
+    { name: "Rohan - Demo", mastery: { light: 55, mirror: 40, circuits: 30, refraction: 45 }, misconception: "Series vs Parallel Confusion", atRisk: true },
+    { name: "Meera - Demo", mastery: { light: 90, mirror: 75, circuits: 85, refraction: 80 }, misconception: "None", atRisk: false }
+  ];
+}
+function renderTeacherDashboard() {
+  let data = getClassData();
+  let concepts = ["light", "mirror", "circuits", "refraction"];
+  let gaps = concepts.map(c => {
+    let avg = data.reduce((a, s) => a + (s.mastery[c] || 0), 0) / data.length;
+    return { concept: c, avg: Math.round(avg) };
+  }).sort((a, b) => a.avg - b.avg);
+  let overall = Math.round(gaps.reduce((a, g) => a + g.avg, 0) / gaps.length);
+  let atRisk = data.filter(s => s.atRisk).length;
+  document.getElementById('classAvg').textContent = overall + "%";
+  document.getElementById('classAtRisk').textContent = atRisk;
+  document.getElementById('classTopGap').textContent = TOPICS[gaps[0].concept] ? TOPICS[gaps[0].concept].name : gaps[0].concept;
+  document.getElementById('teacherGaps').innerHTML = gaps.map(g => `<div class="bg-black/30 rounded-xl px-3 py-2 flex justify-between"><span>${TOPICS[g.concept] ? TOPICS[g.concept].name : g.concept}</span><span>${g.avg}% ${g.avg < 50 ? '• NEEDS RE-TEACHING' : '• OK'}</span></div>`).join('');
+  let counts = {};
+  data.forEach(s => { counts[s.misconception] = (counts[s.misconception] || 0) + 1; });
+  document.getElementById('teacherMisconceptions').innerHTML = Object.keys(counts).map(k => `<div class="bg-black/30 rounded-xl px-3 py-2 flex justify-between"><span>${k}</span><span>${counts[k]} students</span></div>`).join('');
+  document.getElementById('teacherStudents').innerHTML = data.map(s => {
+    let avg = Math.round(Object.values(s.mastery).reduce((a, b) => a + b, 0) / Object.values(s.mastery).length);
+    return `<div class="bg-black/30 rounded-xl px-3 py-2 flex justify-between flex-wrap gap-2"><span class="font-bold">${s.name} ${s.atRisk ? '• ⚠️ At Risk' : '• ✅ On Track'}</span><span>Avg ${avg}% • Misconception: ${s.misconception}</span></div>`;
+  }).join('');
+  document.getElementById('teacherSuggestion').textContent = `Re-teach ${TOPICS[gaps[0].concept] ? TOPICS[gaps[0].concept].name : gaps[0].concept} with focused practice. Class average is ${gaps[0].avg}%. Top misconception is ${Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0]}.`;
+}
+function switchTeacherView() {
+  teacherView = teacherView === 'class' ? 'student' : 'class';
+  document.getElementById('teacherViewLabel').textContent = teacherView === 'class' ? 'Class View' : 'Student View';
+  renderTeacherDashboard();
+  showToast("Teacher view: " + teacherView);
+}
+function addTeacherDemoData() {
+  teacherDemo = [
+    { name: "Aarav", mastery: { light: 80, mirror: 30, circuits: 45, refraction: 60 }, misconception: "Sign Convention Error", atRisk: true },
+    { name: "Sana", mastery: { light: 70, mirror: 25, circuits: 60, refraction: 55 }, misconception: "Sign Convention Error", atRisk: true },
+    { name: "Rohan", mastery: { light: 55, mirror: 40, circuits: 30, refraction: 45 }, misconception: "Series vs Parallel Confusion", atRisk: true },
+    { name: "Meera", mastery: { light: 90, mirror: 75, circuits: 85, refraction: 80 }, misconception: "None", atRisk: false },
+    { name: "Kabir", mastery: { light: 65, mirror: 35, circuits: 50, refraction: 40 }, misconception: "Refraction Direction Error", atRisk: true }
+  ];
+  localStorage.setItem('priya_teacher_demo', JSON.stringify(teacherDemo));
+  renderTeacherDashboard();
+  showToast("Demo class data loaded");
+}
+function clearTeacherData() { localStorage.removeItem('priya_teacher_demo'); teacherDemo = null; renderTeacherDashboard(); showToast("Demo data cleared"); }
+function exportTeacherReport() {
+  let data = getClassData();
+  let text = "Priya Teacher Report - Class 10 Physics\n";
+  text += "Students: " + data.length + "\n";
+  text += "Class Avg: " + document.getElementById('classAvg').textContent + "\n";
+  text += "Biggest Gap: " + document.getElementById('classTopGap').textContent + "\n";
+  text += "Action: " + document.getElementById('teacherSuggestion').textContent + "\n";
+  text += "Students:\n" + data.map(s => s.name + " - Avg " + Math.round(Object.values(s.mastery).reduce((a, b) => a + b, 0) / Object.values(s.mastery).length) + "% - " + s.misconception).join("\n");
+  let blob = new Blob([text], { type: 'text/plain' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a'); a.href = url; a.download = "Priya-Teacher-Report.txt"; a.click();
+  showToast("Teacher report downloaded");
+}
+
+// --- CHAT + VOICE ---
+function addChat(msg, who) {
+  let box = document.getElementById('chatBox');
+  if (!box) return;
+  box.innerHTML += `<div class="${who === 'user' ? 'text-right' : ''}"><span class="inline-block ${who === 'user' ? 'bg-pink-600' : 'bg-white/10'} px-3 py-2 rounded-2xl text-sm max-w-[85%]">${msg}</span></div>`;
+  box.scrollTop = box.scrollHeight;
+}
+function getTutorReply(text) {
+  let t = text.toLowerCase();
+  if (currentModel === 'companion') {
+    if (t.includes('hello') || t.includes('hi')) return `Hey ${userName || 'friend'}! So good to see you. What should we do today? Study, music, or chat?`;
+    if (t.includes('motivat')) return `You got this! One small win today = big win tomorrow. Do 3 questions with me, I will cheer for you.`;
+    if (t.includes('music')) return `Music time! Go to Music tab, play Online Sample or your offline songs. I will lower volume when I speak.`;
+    if (t.includes('tired') || t.includes('bored')) return `Take a 5 minute break. Listen to one song, drink water, then come back. I will be here.`;
+  }
+  if (t.includes('hello') || t.includes('hi')) return `Hello ${userName || 'learner'}! I am Priya. Tell me which topic is hard.`;
+  if (t.includes('mirror')) return `Mirror Formula: 1/v + 1/u = 1/f. Remember: u is always negative. Example: u = -20, f = -10, v = -20 cm. Common mistake is forgetting minus sign. Want a quiz?`;
+  if (t.includes('lens')) return `Lens Formula: 1/v - 1/u = 1/f. Mirror uses plus, Lens uses minus. Power P = 100 / f in cm.`;
+  if (t.includes('refraction')) return `Refraction: Light bends when it changes medium. Rarer to denser bends towards normal. Denser to rarer bends away.`;
+  if (t.includes('reflection')) return `Reflection: Angle of incidence = Angle of reflection. Plane mirror gives virtual, erect, same size image.`;
+  if (t.includes('electricity') || t.includes('ohm') || t.includes('current') || t.includes('resistance')) return `Electricity: V = IR. Series current same, Parallel voltage same. Power P = VI. Ammeter in series, Voltmeter in parallel.`;
+  if (t.includes('fraction')) return `Fractions are easy. Pizza cut into 4 parts. 1 part = 1/4. 2 parts = 1/2. Want a quiz?`;
+  if (t.includes('algebra')) return `Algebra: x is a mystery number. If x + 5 = 12, then x = 7. Move numbers and change sign.`;
+  if (t.includes('gate')) return `GATE: Focus on DBMS, OS, CN, DS first. Practice 50 MCQs daily. Then mock tests. Go to GATE tab.`;
+  if (t.includes('net')) return `UGC NET Paper 1: Focus on Teaching, Research, ICT, Reasoning. These are easy and scoring.`;
+  if (t.includes('pdf')) return `Upload your PDF in PDF tab. I will explain whole PDF or part by part, and make a mock from it.`;
+  if (t.includes('music')) return `Music is on! Use Music tab. I lower volume while I speak.`;
+  if (t.includes('task') || t.includes('calendar') || t.includes('reminder')) return `Go to Calendar tab. Add task, date, time, and turn on reminder. I will remind you.`;
+  if (t.includes('book')) return `Go to Books tab. Read motivation books and story books. I can read them aloud too.`;
+  if (t.includes('video') || t.includes('youtube')) return `Go to YouTube tab. Search any topic. Watch, then I will explain and make a quiz.`;
+  if (t.includes('teacher')) return `Teacher Dashboard shows class gaps, common misconceptions, and at-risk students. Go to Teacher tab.`;
+  if (t.includes('motivat') || t.includes('tired') || t.includes('hard')) return `You are doing better than you think. Just do 3 questions today. I will handle the rest.`;
+  if (t.includes('exam') || t.includes('test')) return `For exams: Revise weak topics, do a mock, review mistakes. Go to Mock tab.`;
+  if (pdfText && t.includes('explain')) return `From your PDF: ${pdfText.slice(0, 400)} ... Want key points?`;
+  return `Good question! "${text}" - Let us break it into small parts. Tell me the topic and I will explain simply with an example.`;
+}
+function sendChat() {
+  let inp = document.getElementById('chatInput');
+  let v = inp.value.trim(); if (!v) return;
+  addChat(v, 'user'); inp.value = "";
+  setTimeout(() => priyaSay(getTutorReply(v)), 500);
+}
+function quickAsk(q) {
+  addChat(q, 'user');
+  setTimeout(() => priyaSay(getTutorReply(q)), 500);
+}
+function clearChat() { document.getElementById('chatBox').innerHTML = ""; addChat("Chat cleared. Ask me anything.", 'priya'); }
+let rec = null, listening = false;
+function toggleMic() {
+  if (listening) { if (rec) rec.stop(); listening = false; return; }
+  try {
+    let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert("Use Chrome for voice."); return; }
+    rec = new SR(); rec.lang = 'en-IN';
+    rec.onstart = () => { listening = true; document.getElementById('listeningText').textContent = "Listening..."; };
+    rec.onresult = (e) => { let txt = e.results[0][0].transcript; addChat(txt, 'user'); setTimeout(() => priyaSay(getTutorReply(txt)), 500); };
+    rec.onend = () => { listening = false; document.getElementById('listeningText').textContent = ""; };
+    rec.start();
+  } catch (e) { }
+}
+
+// --- FINAL SHOWTAB + INIT ---
+const _oldShowTab6 = showTab;
+showTab = function(id, btn) {
+  document.querySelectorAll('#page-app > section').forEach(s => s.classList.add('hidden'));
+  let el = document.getElementById('tab-' + id);
+  if (el) el.classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'learn') renderLearn();
+  if (id === 'practice') renderPracticeTopicTabs();
+  if (id === 'gate') renderGate();
+  if (id === 'video') renderVideos();
+  if (id === 'review') renderReview();
+  if (id === 'calendar') renderTasks();
+  if (id === 'books') renderBooks();
+  if (id === 'music') renderSongList();
+  if (id === 'teacher') renderTeacherDashboard();
+};
+window.addEventListener('load', () => {
+  renderHome(); renderDashboard(); renderLearn(); renderPracticeTopicTabs(); renderGate(); renderVideos(); renderTasks(); renderBooks(); renderSongList(); renderReview(); renderTeacherDashboard();
+  addChat("Hello! I am Priya. Ask me any doubt, or click a quick question above.", 'priya');
+});
+</script>
+</body>
+</html>
